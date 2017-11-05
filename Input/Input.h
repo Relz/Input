@@ -35,6 +35,28 @@ public:
 		}
 	}
 
+	template<class T>
+	bool SkipArgument()
+	{
+		T tempArgument;
+		return ReadArguments(tempArgument);
+	}
+
+	template<class T>
+	bool SkipArguments(size_t count)
+	{
+		T tempArgument;
+		while (count != 0)
+		{
+			if (!ReadArguments(tempArgument))
+			{
+				return false;
+			}
+			--count;
+		}
+		return true;
+	}
+
 	bool SkipLine()
 	{
 		m_wis.ignore(std::numeric_limits<std::streamsize>::max(), ENDL_SYMBOL);
