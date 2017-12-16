@@ -146,12 +146,16 @@ public:
 	bool Scan(std::string & scanned, std::string & delimiter, std::vector<std::string> delimiters)
 	{
 		std::string result;
+		if (IsEndOfStream())
+		{
+			scanned = "";
+			return false;
+		}
 		while (!IsEndOfStream())
 		{
 			if (FindDelimiter(delimiters, delimiter))
 			{
-				scanned = result;
-				return true;
+				break;
 			}
 			else
 			{
@@ -167,7 +171,7 @@ public:
 			}
 		}
 		scanned = result;
-		return false;
+		return true;
 	}
 
 	bool IsEndOfStream()
