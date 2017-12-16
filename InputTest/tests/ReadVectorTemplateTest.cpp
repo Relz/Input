@@ -136,10 +136,30 @@ TEST(read_vector_template_function, throws_exception_if_rules_and_true_char_are_
 	), std::invalid_argument);
 }
 
-TEST(read_vector_template_function, reads_until_end_of_line)
+TEST(read_vector_template_function, reads_until_end_of_line_lf)
 {
 	vector<int> expectedVector = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 	wstringstream wis(L"  1   2   3   4   5   6   7   8   9\n1 2");
+	CInput input(wis);
+	vector<int> numbers;
+	EXPECT_TRUE(input.ReadVector(numbers));
+	EXPECT_EQ(numbers, expectedVector);
+}
+
+TEST(read_vector_template_function, reads_until_end_of_line_cr)
+{
+	vector<int> expectedVector = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+	wstringstream wis(L"  1   2   3   4   5   6   7   8   9\r1 2");
+	CInput input(wis);
+	vector<int> numbers;
+	EXPECT_TRUE(input.ReadVector(numbers));
+	EXPECT_EQ(numbers, expectedVector);
+}
+
+TEST(read_vector_template_function, reads_until_end_of_line_crlf)
+{
+	vector<int> expectedVector = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+	wstringstream wis(L"  1   2   3   4   5   6   7   8   9\r\n1 2");
 	CInput input(wis);
 	vector<int> numbers;
 	EXPECT_TRUE(input.ReadVector(numbers));

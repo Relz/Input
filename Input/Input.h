@@ -16,7 +16,7 @@ public:
 	explicit CInput(std::wistream & wis)
 			: m_wis(wis)
 	{
-		if (IsStreamEmpty())
+		if (IsEndOfStream())
 		{
 			throw std::invalid_argument("Поток пуст");
 		}
@@ -29,7 +29,7 @@ public:
 		{
 			throw std::invalid_argument("Файл \"" + inputFileName + "\" не существует");
 		}
-		if (IsStreamEmpty())
+		if (IsEndOfStream())
 		{
 			throw std::invalid_argument("Файл \"" + inputFileName + "\" пуст");
 		}
@@ -59,8 +59,12 @@ public:
 
 	bool SkipLine()
 	{
-		m_wis.ignore(std::numeric_limits<std::streamsize>::max(), ENDL_SYMBOL);
-		return !IsStreamEmpty();
+		while (IsNotEndOfLine() && !IsEndOfStream())
+		{
+			m_wis.get();
+		}
+		m_wis.get();
+		return !IsEndOfStream();
 	}
 
 	bool SkipLines(size_t count)
@@ -140,9 +144,7 @@ public:
 	}
 
 private:
-	static const int ENDL_SYMBOL = std::char_traits<char>::to_int_type('\n');
-
-	bool IsStreamEmpty()
+	bool IsEndOfStream()
 	{
 		return m_wis.peek() == std::wifstream::traits_type::eof();
 	}
@@ -150,12 +152,12 @@ private:
 	template<class T>
 	bool GetArgumentFromStream(T & arg)
 	{
-		return (m_wis.peek() != ENDL_SYMBOL && !m_wis.eof() && m_wis >> arg);
+		return (IsNotEndOfLine() && !m_wis.eof() && m_wis >> arg);
 	}
 
 	bool GetArgumentFromStream(wchar_t & arg)
 	{
-		return (m_wis.peek() != ENDL_SYMBOL && !m_wis.eof() && m_wis.get(arg));
+		return (IsNotEndOfLine() && !m_wis.eof() && m_wis.get(arg));
 	}
 
 	bool GetArgumentsFromStream() { return true; }
@@ -276,6 +278,32 @@ private:
 			result = true;
 		}
 		return result && (vect.size() == settings.readLimit || settings.readLimit == ReadLimit::UNLIMITED);
+	}
+
+	static const int ENDL_SYMBOL_CODE_LF = 10;
+	static const int ENDL_SYMBOL_CODE_CR = 13;
+
+	bool IsNotEndOfLine()
+	{
+		if (m_wis.peek() == ENDL_SYMBOL_CODE_CR)
+		{
+			wchar_t nextSymbol;
+			m_wis.get(nextSymbol);
+			if (m_wis.peek() == ENDL_SYMBOL_CODE_LF)
+			{
+				return false;
+			}
+			else
+			{
+				m_wis.seekg(-1, std::ios::cur);
+				return false;
+			}
+		}
+		else if (m_wis.peek() == ENDL_SYMBOL_CODE_LF)
+		{
+			return false;
+		}
+		return true;
 	}
 
 	std::wifstream m_inputFile;
