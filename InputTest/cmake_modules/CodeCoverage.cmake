@@ -7,6 +7,14 @@ IF(NOT GCOV_PATH)
     MESSAGE(FATAL_ERROR "gcov not found! Aborting...")
 ENDIF() # NOT GCOV_PATH
 
+IF(NOT LCOV_PATH)
+    FIND_PROGRAM( LCOV_PATH lcov.bat )
+ENDIF() # NOT LCOV_PATH
+
+IF(NOT GENHTML_PATH)
+    FIND_PROGRAM( GENHTML_PATH genhtml.bat )
+ENDIF() # NOT GENHTML_PATH
+
 IF(NOT CMAKE_COMPILER_IS_GNUCXX)
     # Clang version 3.0.0 and greater now supports gcov as well.
     MESSAGE(WARNING "Compiler is not GNU gcc! Clang Version 3.0.0 and greater supports gcov as well, but older versions don't.")

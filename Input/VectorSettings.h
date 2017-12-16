@@ -2,8 +2,8 @@
 #define PROJECT_VECTORSETTINGS_H
 
 #include <unordered_map>
-#include <recodext.h>
 #include "BaseSettings.h"
+#include "Constant.h"
 
 template <typename T>
 class VectorSettings: public BaseSettings
