@@ -23,10 +23,31 @@ TEST(read_matrix_template_function, returns_false_if_stream_can_not_convert_inpu
 	EXPECT_FALSE(input.ReadMatrix(matrix));
 }
 
-TEST(read_matrix_template_function, push_back_by_default)
+TEST(read_matrix_template_function, push_back_by_default_lf)
 {
 	vector<vector<int>> expectedMatrix = {{0, 1, 2, 3}, {4, 5, 6, 7}};
-	CInput input("input/matrix");
+	wstringstream wis(L"0 1 2 3\n4 5 6 7");
+	CInput input(wis);
+	vector<vector<int>> matrix;
+	EXPECT_TRUE(input.ReadMatrix(matrix));
+	EXPECT_EQ(matrix, expectedMatrix);
+}
+
+TEST(read_matrix_template_function, push_back_by_default_cr)
+{
+	vector<vector<int>> expectedMatrix = {{0, 1, 2, 3}, {4, 5, 6, 7}};
+	wstringstream wis(L"0 1 2 3\r4 5 6 7");
+	CInput input(wis);
+	vector<vector<int>> matrix;
+	EXPECT_TRUE(input.ReadMatrix(matrix));
+	EXPECT_EQ(matrix, expectedMatrix);
+}
+
+TEST(read_matrix_template_function, push_back_by_default_crlf)
+{
+	vector<vector<int>> expectedMatrix = {{0, 1, 2, 3}, {4, 5, 6, 7}};
+	wstringstream wis(L"0 1 2 3\r\n4 5 6 7");
+	CInput input(wis);
 	vector<vector<int>> matrix;
 	EXPECT_TRUE(input.ReadMatrix(matrix));
 	EXPECT_EQ(matrix, expectedMatrix);
@@ -35,7 +56,8 @@ TEST(read_matrix_template_function, push_back_by_default)
 TEST(read_matrix_template_function, can_push_front)
 {
 	vector<vector<int>> expectedMatrix = {{4, 5, 6, 7}, {0, 1, 2, 3}};
-	CInput input("input/matrix");
+	wstringstream wis(L"0 1 2 3\n4 5 6 7");
+	CInput input(wis);
 	vector<vector<int>> numbers;
 	EXPECT_TRUE(input.ReadMatrix(
 			numbers,
@@ -51,7 +73,8 @@ TEST(read_matrix_template_function, can_push_front)
 TEST(read_matrix_template_function, reads_until_unexpected_type_element_on_same_line)
 {
 	vector<vector<int>> expectedMatrix = {{0, 1, 2, 3}};
-	CInput input("input/matrixWithUnexpectedElementOnSameLine");
+	wstringstream wis(L"0 1 2 3 String");
+	CInput input(wis);
 	vector<vector<int>> matrix;
 	EXPECT_TRUE(input.ReadMatrix(matrix));
 	EXPECT_EQ(matrix, expectedMatrix);
@@ -60,7 +83,8 @@ TEST(read_matrix_template_function, reads_until_unexpected_type_element_on_same_
 TEST(read_matrix_template_function, reads_until_unexpected_type_element_on_new_line)
 {
 	vector<vector<int>> expectedMatrix = {{0, 1, 2, 3}};
-	CInput input("input/matrixWithUnexpectedElementOnNewLine");
+	wstringstream wis(L"0 1 2 3\nString");
+	CInput input(wis);
 	vector<vector<int>> matrix;
 	EXPECT_TRUE(input.ReadMatrix(matrix));
 	EXPECT_EQ(matrix, expectedMatrix);
