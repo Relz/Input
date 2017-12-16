@@ -8,7 +8,7 @@
 class BaseSettings
 {
 public:
-	std::vector<wchar_t> skipSymbols;
+	std::vector<char> skipSymbols;
 	ReadVectorMethod readMethod;
 	size_t readLimit;
 
@@ -19,7 +19,7 @@ public:
 	{}
 
 	BaseSettings(
-			const std::vector<wchar_t> & skipSymbols,
+			const std::vector<char> & skipSymbols,
 			ReadVectorMethod readMethod,
 			size_t readLimit
 	)

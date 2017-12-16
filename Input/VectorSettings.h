@@ -9,20 +9,20 @@ template <typename T>
 class VectorSettings: public BaseSettings
 {
 public:
-	wchar_t trueChar;
-	std::unordered_map<wchar_t, T> rules;
+	char trueChar;
+	std::unordered_map<char, T> rules;
 
 	VectorSettings()
 			: trueChar(NOT_A_CHARACTER)
-			, rules(std::unordered_map<wchar_t, T>())
+			, rules(std::unordered_map<char, T>())
 	{}
 
 	VectorSettings(
-			const std::vector<wchar_t> & skipSymbols,
+			const std::vector<char> & skipSymbols,
 			ReadVectorMethod readVectorMethod,
 			size_t readLimit,
-			wchar_t trueChar,
-			const std::unordered_map<wchar_t, T> & rules
+			char trueChar,
+			const std::unordered_map<char, T> & rules
 	)
 			: BaseSettings(skipSymbols, readVectorMethod, readLimit)
 			, trueChar(trueChar)

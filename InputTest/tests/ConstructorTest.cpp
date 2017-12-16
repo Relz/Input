@@ -11,9 +11,9 @@ TEST(constructor, throws_invalid_argument_if_file_does_not_exists)
 
 TEST(constructor, throws_invalid_argument_if_stream_is_empty)
 {
-	wofstream wof("empty", std::ofstream::trunc);
+	ofstream wof("empty", ofstream::trunc);
 	wof.close();
 	EXPECT_THROW(CInput("empty"), invalid_argument);
-	wstringstream wis(L"");
-	EXPECT_THROW(CInput input(wis), invalid_argument);
+	stringstream is("");
+	EXPECT_THROW(CInput input(is), invalid_argument);
 }

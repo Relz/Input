@@ -12,7 +12,7 @@ public:
 	MatrixSettings() = default;
 
 	MatrixSettings(
-			const std::vector<wchar_t> & skipSymbols,
+			const std::vector<char> & skipSymbols,
 			ReadVectorMethod readVectorMethod,
 			size_t readLimit
 	)

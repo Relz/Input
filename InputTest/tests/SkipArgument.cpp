@@ -7,50 +7,50 @@ using namespace std;
 
 TEST(skip_argument_function, returns_false_if_stream_has_not_argument)
 {
-	wstringstream wis(L"0");
-	CInput input(wis);
-	wchar_t firstArgument;
+	stringstream is("0");
+	CInput input(is);
+	char firstArgument;
 	input.ReadArguments(firstArgument);
-	EXPECT_FALSE(input.SkipArgument<wchar_t>());
+	EXPECT_FALSE(input.SkipArgument<char>());
 }
 
 TEST(skip_argument_function, skips_argument)
 {
 	{
-		wstringstream wis(L"0 0.1 stringArgument");
-		CInput input(wis);
-		EXPECT_TRUE(input.SkipArgument<std::wstring>());
+		stringstream is("0 0.1 stringArgument");
+		CInput input(is);
+		EXPECT_TRUE(input.SkipArgument<string>());
 
 		double number;
 		EXPECT_TRUE(input.ReadArguments(number));
 		EXPECT_EQ(number, 0.1);
 	}
 	{
-		wstringstream wis(L"0 0.1 stringArgument");
-		CInput input(wis);
-		EXPECT_TRUE(input.SkipArgument<wchar_t>());
+		stringstream is("0 0.1 stringArgument");
+		CInput input(is);
+		EXPECT_TRUE(input.SkipArgument<char>());
 
-		wchar_t space;
+		char space;
 		EXPECT_TRUE(input.ReadArguments(space));
 		EXPECT_EQ(space, ' ');
 	}
 	{
-		wstringstream wis(L"0 0.1 stringArgument");
-		CInput input(wis);
-		EXPECT_TRUE(input.SkipArgument<std::wstring>());
-		EXPECT_TRUE(input.SkipArgument<std::wstring>());
+		stringstream is("0 0.1 stringArgument");
+		CInput input(is);
+		EXPECT_TRUE(input.SkipArgument<string>());
+		EXPECT_TRUE(input.SkipArgument<string>());
 
-		std::wstring lastArgument;
+		string lastArgument;
 		EXPECT_TRUE(input.ReadArguments(lastArgument));
-		EXPECT_EQ(lastArgument, L"stringArgument");
+		EXPECT_EQ(lastArgument, "stringArgument");
 	}
 }
 
 TEST(skip_argument_function, does_not_skips_end_of_line)
 {
-	wstringstream wis(L"\n0 0.1 stringArgument");
-	CInput input(wis);
-	EXPECT_FALSE(input.SkipArgument<wchar_t>());
+	stringstream is("\n0 0.1 stringArgument");
+	CInput input(is);
+	EXPECT_FALSE(input.SkipArgument<char>());
 
 	double number = -1;
 	EXPECT_FALSE(input.ReadArguments(number));

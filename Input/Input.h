@@ -13,8 +13,8 @@
 class CInput
 {
 public:
-	explicit CInput(std::wistream & wis)
-			: m_wis(wis)
+	explicit CInput(std::istream & is)
+			: m_is(is)
 	{
 		if (IsEndOfStream())
 		{
@@ -61,9 +61,9 @@ public:
 	{
 		while (IsNotEndOfLine() && !IsEndOfStream())
 		{
-			m_wis.get();
+			m_is.get();
 		}
-		m_wis.get();
+		m_is.get();
 		return !IsEndOfStream();
 	}
 
@@ -80,17 +80,17 @@ public:
 		return true;
 	}
 
-	void SkipSymbols(const std::vector<wchar_t> & symbols)
+	void SkipSymbols(const std::vector<char> & symbols)
 	{
 		bool symbolSkipped = true;
 		while(symbolSkipped)
 		{
 			symbolSkipped = false;
-			for (wchar_t symbol : symbols)
+			for (char symbol : symbols)
 			{
-				if (m_wis.peek() == std::char_traits<wchar_t>::to_int_type(symbol))
+				if (m_is.peek() == std::char_traits<char>::to_int_type(symbol))
 				{
-					m_wis.get();
+					m_is.get();
 					symbolSkipped = true;
 				}
 			}
@@ -117,7 +117,7 @@ public:
 
 	bool ReadVector(std::vector<bool> & vect, const VectorSettings<bool> & settings = VectorSettings<bool>())
 	{
-		return ReadVectorBase<wchar_t>(vect, settings);
+		return ReadVectorBase<char>(vect, settings);
 	}
 
 	template<typename T>
@@ -145,19 +145,19 @@ public:
 
 	bool IsEndOfStream()
 	{
-		return m_wis.peek() == std::wifstream::traits_type::eof();
+		return m_is.peek() == std::ifstream::traits_type::eof();
 	}
 
 private:
 	template<class T>
 	bool GetArgumentFromStream(T & arg)
 	{
-		return (IsNotEndOfLine() && !m_wis.eof() && m_wis >> arg);
+		return (IsNotEndOfLine() && !m_is.eof() && m_is >> arg);
 	}
 
-	bool GetArgumentFromStream(wchar_t & arg)
+	bool GetArgumentFromStream(char & arg)
 	{
-		return (IsNotEndOfLine() && !m_wis.eof() && m_wis.get(arg));
+		return (IsNotEndOfLine() && !m_is.eof() && m_is.get(arg));
 	}
 
 	bool GetArgumentsFromStream() { return true; }
@@ -213,7 +213,7 @@ private:
 		return false;
 	}
 
-	bool VectorPush(std::vector<bool> & vect, const wchar_t & elem, const VectorSettings<bool> & settings = VectorSettings<bool>())
+	bool VectorPush(std::vector<bool> & vect, const char & elem, const VectorSettings<bool> & settings = VectorSettings<bool>())
 	{
 		if (settings.trueChar == NOT_A_CHARACTER && settings.rules.empty())
 		{
@@ -285,27 +285,27 @@ private:
 
 	bool IsNotEndOfLine()
 	{
-		if (m_wis.peek() == ENDL_SYMBOL_CODE_CR)
+		if (m_is.peek() == ENDL_SYMBOL_CODE_CR)
 		{
-			wchar_t nextSymbol;
-			m_wis.get(nextSymbol);
-			if (m_wis.peek() == ENDL_SYMBOL_CODE_LF)
+			char nextSymbol;
+			m_is.get(nextSymbol);
+			if (m_is.peek() == ENDL_SYMBOL_CODE_LF)
 			{
 				return false;
 			}
 			else
 			{
-				m_wis.seekg(-1, std::ios::cur);
+				m_is.seekg(-1, std::ios::cur);
 				return false;
 			}
 		}
-		else if (m_wis.peek() == ENDL_SYMBOL_CODE_LF)
+		else if (m_is.peek() == ENDL_SYMBOL_CODE_LF)
 		{
 			return false;
 		}
 		return true;
 	}
 
-	std::wifstream m_inputFile;
-	std::wistream & m_wis = m_inputFile;
+	std::ifstream m_inputFile;
+	std::istream & m_is = m_inputFile;
 };
