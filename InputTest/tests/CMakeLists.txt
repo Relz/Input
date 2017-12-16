@@ -12,7 +12,10 @@ SET(SOURCE_FILES
         ReadVectorTemplateWithRulesTest.cpp
         ReadVectorWCharTest.cpp
         ReadVectorWithTrueCharTest.cpp
-        ReadMatrixTemplateTest.cpp VectorPushTest.cpp)
+        ReadMatrixTemplateTest.cpp
+		VectorPushTest.cpp
+		ScanTest.cpp
+)
 
 ADD_EXECUTABLE(InputTest ${SOURCE_FILES})
 

@@ -143,6 +143,33 @@ public:
 		return !matrix.empty() && (enoughRows || matrixSettings.readLimit == ReadLimit::UNLIMITED);
 	}
 
+	bool Scan(std::string & scanned, std::string & delimiter, std::vector<std::string> delimiters)
+	{
+		std::string result;
+		while (!IsEndOfStream())
+		{
+			if (FindDelimiter(delimiters, delimiter))
+			{
+				scanned = result;
+				return true;
+			}
+			else
+			{
+				char ch;
+				if (ReadArguments(ch))
+				{
+					result += ch;
+				}
+				else
+				{
+					SkipLine();
+				}
+			}
+		}
+		scanned = result;
+		return false;
+	}
+
 	bool IsEndOfStream()
 	{
 		return m_is.peek() == std::ifstream::traits_type::eof();
@@ -304,6 +331,39 @@ private:
 			return false;
 		}
 		return true;
+	}
+
+	bool FindDelimiter(const std::vector<std::string> & delimiters, std::string & result)
+	{
+		for (const std::string & delimiter : delimiters)
+		{
+			std::string possibleDelimiter;
+			bool found = true;
+			char ch;
+			while (possibleDelimiter.length() < delimiter.length() && ReadArguments(ch))
+			{
+				possibleDelimiter += ch;
+				size_t index = possibleDelimiter.length() - 1;
+				if (possibleDelimiter.at(index) != delimiter.at(index))
+				{
+					found = false;
+					break;
+				}
+			}
+			if (possibleDelimiter.length() != delimiter.length())
+			{
+				found = false;
+			}
+			if (found)
+			{
+				result = possibleDelimiter;
+				return true;
+			}
+			m_is.seekg(-possibleDelimiter.length(), m_is.cur);
+		}
+		result = "";
+
+		return false;
 	}
 
 	std::ifstream m_inputFile;
