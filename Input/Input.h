@@ -143,12 +143,12 @@ public:
 		return !matrix.empty() && (enoughRows || matrixSettings.readLimit == ReadLimit::UNLIMITED);
 	}
 
-private:
 	bool IsEndOfStream()
 	{
 		return m_wis.peek() == std::wifstream::traits_type::eof();
 	}
 
+private:
 	template<class T>
 	bool GetArgumentFromStream(T & arg)
 	{
