@@ -6,22 +6,13 @@ using namespace std;
 
 TEST(scan_function, returns_false_if_end_of_stream)
 {
-	{
-		istringstream is("");
-		CInput input(is);
-		string scanned;
-		string delimiter;
-		EXPECT_FALSE(input.Scan(scanned, delimiter, {" "}));
-	}
-	{
-		istringstream is("class User");
-		CInput input(is);
-		string scanned;
-		string delimiter;
-		EXPECT_TRUE(input.Scan(scanned, delimiter, {" "}));
-		EXPECT_TRUE(input.Scan(scanned, delimiter, {" "}));
-		EXPECT_FALSE(input.Scan(scanned, delimiter, {" "}));
-	}
+	istringstream is("class User");
+	CInput input(is);
+	string scanned;
+	string delimiter;
+	EXPECT_TRUE(input.Scan(scanned, delimiter, {" "}));
+	EXPECT_TRUE(input.Scan(scanned, delimiter, {" "}));
+	EXPECT_FALSE(input.Scan(scanned, delimiter, {" "}));
 }
 
 TEST(scan_function, returns_scanned_string_and_delimiter)
