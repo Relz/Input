@@ -344,7 +344,7 @@ private:
 			std::string possibleDelimiter;
 			bool found = true;
 			char ch;
-			while (possibleDelimiter.length() < delimiter.length() && ReadArguments(ch))
+			while (possibleDelimiter.length() < delimiter.length() && !m_is.eof() && m_is.get(ch))
 			{
 				possibleDelimiter += ch;
 				size_t index = possibleDelimiter.length() - 1;
