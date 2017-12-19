@@ -80,8 +80,9 @@ public:
 		return true;
 	}
 
-	void SkipSymbols(const std::vector<char> & symbols)
+	bool SkipSymbols(const std::vector<char> & symbols)
 	{
+		bool result = false;
 		bool symbolSkipped = true;
 		while(symbolSkipped)
 		{
@@ -92,9 +93,11 @@ public:
 				{
 					m_is.get();
 					symbolSkipped = true;
+					result = true;
 				}
 			}
 		}
+		return result;
 	}
 
 	template<typename... Targs>
@@ -177,6 +180,32 @@ public:
 	bool IsEndOfStream()
 	{
 		return m_is.peek() == std::ifstream::traits_type::eof();
+	}
+
+	bool SkipUntilSymbols(const std::vector<char> & symbols)
+	{
+		bool symbolReached = false;
+		while(!symbolReached)
+		{
+			for (char symbol : symbols)
+			{
+				if (m_is.peek() == std::char_traits<char>::to_int_type(symbol))
+				{
+					symbolReached = true;
+					break;
+				}
+			}
+			if (!symbolReached)
+			{
+				if (m_is.eof())
+				{
+					return false;
+				}
+				m_is.get();
+
+			}
+		}
+		return symbolReached;
 	}
 
 private:
