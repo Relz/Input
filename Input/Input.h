@@ -202,7 +202,6 @@ public:
 					return false;
 				}
 				m_is.get();
-
 			}
 		}
 		return symbolReached;
@@ -224,8 +223,7 @@ public:
 				m_is.seekg(-delimiter.length(), m_is.cur);
 				break;
 			}
-			char ch;
-			m_is.get(ch);
+			m_is.get();
 		}
 		return symbolReached;
 	}
