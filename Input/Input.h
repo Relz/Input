@@ -208,6 +208,28 @@ public:
 		return symbolReached;
 	}
 
+	bool SkipUntilStrings(const std::vector<std::string> & strings)
+	{
+		bool symbolReached = false;
+		while(!symbolReached)
+		{
+			if (m_is.eof())
+			{
+				return false;
+			}
+			std::string delimiter;
+			if (FindDelimiter(strings, delimiter))
+			{
+				symbolReached = true;
+				m_is.seekg(-delimiter.length(), m_is.cur);
+				break;
+			}
+			char ch;
+			m_is.get(ch);
+		}
+		return symbolReached;
+	}
+
 private:
 	template<class T>
 	bool GetArgumentFromStream(T & arg)
@@ -392,9 +414,12 @@ private:
 				result = possibleDelimiter;
 				return true;
 			}
-			m_is.seekg(-possibleDelimiter.length(), m_is.cur);
+			if (!possibleDelimiter.empty())
+			{
+				m_is.seekg(-possibleDelimiter.length(), m_is.cur);
+			}
 		}
-		result = "";
+		result.clear();
 
 		return false;
 	}

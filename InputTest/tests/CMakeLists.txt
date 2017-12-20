@@ -16,7 +16,7 @@ SET(SOURCE_FILES
         ReadMatrixTemplateTest.cpp
 		VectorPushTest.cpp
 		ScanTest.cpp
-)
+        SkipUntilStrings.cpp)
 
 ADD_EXECUTABLE(InputTest ${SOURCE_FILES})
 
