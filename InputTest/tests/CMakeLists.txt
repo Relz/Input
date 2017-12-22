@@ -2,8 +2,8 @@ INCLUDE_DIRECTORIES(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 SET(SOURCE_FILES
         ConstructorTest.cpp
-        SkipArgument.cpp
-        SkipArguments.cpp
+		SkipArgumentTest.cpp
+		SkipArgumentsTest.cpp
         SkipLineTest.cpp
         SkipLinesTest.cpp
 		SkipSymbolsTest.cpp
@@ -16,7 +16,7 @@ SET(SOURCE_FILES
         ReadMatrixTemplateTest.cpp
 		VectorPushTest.cpp
 		ScanTest.cpp
-        SkipUntilStrings.cpp)
+        SkipUntilStringsTest.cpp)
 
 ADD_EXECUTABLE(InputTest ${SOURCE_FILES})
 

@@ -52,7 +52,7 @@ TEST(skip_argument_function, does_not_skips_end_of_line)
 	CInput input(is);
 	EXPECT_FALSE(input.SkipArgument<char>());
 
-	double number = -1;
+	double number;
 	EXPECT_FALSE(input.ReadArguments(number));
 	EXPECT_NE(number, 0);
 }

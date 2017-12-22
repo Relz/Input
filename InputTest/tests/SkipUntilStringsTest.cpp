@@ -13,6 +13,8 @@ TEST(skip_until_strings_function, skips_until_strings_and_returns_true_if_any_sy
 		stringstream is("                #       #$a");
 		CInput input(is);
 		EXPECT_TRUE(input.SkipUntilStrings({"#$"}));
+		EXPECT_EQ(input.GetLine(), 1);
+		EXPECT_EQ(input.GetColumn(), 25);
 		char tmp;
 		input.ReadArguments(tmp);
 		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('$'));
@@ -22,11 +24,15 @@ TEST(skip_until_strings_function, skips_until_strings_and_returns_true_if_any_sy
 		CInput input(is);
 		EXPECT_FALSE(input.SkipUntilStrings({SPACE_STRING}));
 		EXPECT_TRUE(is.eof());
+		EXPECT_EQ(input.GetLine(), 1);
+		EXPECT_EQ(input.GetColumn(), 2);
 	}
 	{
 		stringstream is("%\n\n\n\n\n\n\n\n\n\n\n#");
 		CInput input(is);
 		EXPECT_TRUE(input.SkipUntilStrings({"#"}));
+		EXPECT_EQ(input.GetLine(), 12);
+		EXPECT_EQ(input.GetColumn(), 1);
 		char tmp;
 		input.ReadArguments(tmp, tmp);
 		EXPECT_TRUE(is.eof());
@@ -39,6 +45,8 @@ TEST(skip_until_strings_function, skips_multiple_strings)
 		stringstream is("  abcaa\n      \n\n\n\n\n   \n\n\n\n   #");
 		CInput input(is);
 		EXPECT_TRUE(input.SkipUntilStrings({"aa", ENDL_STRING}));
+		EXPECT_EQ(input.GetLine(), 1);
+		EXPECT_EQ(input.GetColumn(), 6);
 		char tmp;
 		input.ReadArguments(tmp, tmp);
 		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('\n'));
@@ -48,5 +56,7 @@ TEST(skip_until_strings_function, skips_multiple_strings)
 		CInput input(is);
 		EXPECT_FALSE(input.SkipUntilStrings({SPACE_STRING, ENDL_STRING}));
 		EXPECT_TRUE(is.eof());
+		EXPECT_EQ(input.GetLine(), 1);
+		EXPECT_EQ(input.GetColumn(), 2);
 	}
 }
