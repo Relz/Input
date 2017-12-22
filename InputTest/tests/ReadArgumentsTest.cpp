@@ -27,7 +27,7 @@ TEST(read_arguments_function, returns_true_if_input_have_required_argument_count
 	string arg2;
 	EXPECT_TRUE(input.ReadArguments(arg0, arg1, arg2));
 	EXPECT_EQ(input.GetLine(), 1);
-	EXPECT_EQ(input.GetColumn(), isStr.length() + 1);
+	EXPECT_EQ(input.GetColumn(), static_cast<long>(isStr.length()) + 1);
 }
 
 TEST(read_arguments_function, returns_true_if_input_have_enough_arguments)
@@ -55,7 +55,7 @@ TEST(read_arguments_function, reads_required_arguments_from_stream)
 	EXPECT_DOUBLE_EQ(arg1, 0.1);
 	EXPECT_EQ(arg2, "stringArgument");
 	EXPECT_EQ(input.GetLine(), 1);
-	EXPECT_EQ(input.GetColumn(), isStr.length() + 1);
+	EXPECT_EQ(input.GetColumn(), static_cast<long>(isStr.length()) + 1);
 }
 
 TEST(read_arguments_function, reads_cyrillic_symbols)
@@ -71,5 +71,5 @@ TEST(read_arguments_function, reads_cyrillic_symbols)
 	EXPECT_EQ(arg1, "это");
 	EXPECT_EQ(arg2, "строковыеАргументы");
 	EXPECT_EQ(input.GetLine(), 1);
-	EXPECT_EQ(input.GetColumn(), isStr.length() + 1);
+	EXPECT_EQ(input.GetColumn(), static_cast<long>(isStr.length()) + 1);
 }

@@ -12,7 +12,7 @@ TEST(skip_line_function, returns_false_if_stream_has_not_new_line)
 	CInput input(is);
 	EXPECT_FALSE(input.SkipLine());
 	EXPECT_EQ(input.GetLine(), 1);
-	EXPECT_EQ(input.GetColumn(), isString.length() + 1);
+	EXPECT_EQ(input.GetColumn(), static_cast<long>(isString.length()) + 1);
 }
 
 TEST(skip_line_function, returns_false_if_new_line_in_end_of_stream_lf)
