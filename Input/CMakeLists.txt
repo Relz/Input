@@ -7,6 +7,7 @@ SET(SOURCE_FILES
 		MatrixSettings.h
 		VectorSettings.h
 		Constant.h
+		Position.h
 )
 
 ADD_LIBRARY(Input SHARED ${SOURCE_FILES})

@@ -9,6 +9,7 @@
 #include "BaseSettings.h"
 #include "VectorSettings.h"
 #include "MatrixSettings.h"
+#include "Position.h"
 
 class CInput
 {
@@ -150,18 +151,31 @@ public:
 		return !matrix.empty() && (enoughRows || matrixSettings.readLimit == ReadLimit::UNLIMITED);
 	}
 
-	bool Scan(std::string & scanned, std::string & delimiter, std::vector<std::string> delimiters)
+	bool Scan(
+			std::vector<std::string> delimiters,
+			std::string & scannedString,
+			Position & scannedStringPosition,
+			std::string & delimiter,
+			Position & delimiterPosition
+	)
 	{
+		scannedStringPosition = Position();
+		delimiterPosition = Position();
 		std::string result;
 		if (IsEndOfStream())
 		{
-			scanned = "";
+			scannedString.clear();
+			delimiter.clear();
 			return false;
 		}
+		scannedStringPosition.line = m_position.line;
+		scannedStringPosition.column = m_position.column;
 		while (!IsEndOfStream())
 		{
 			if (FindDelimiter(delimiters, delimiter))
 			{
+				delimiterPosition.line = m_position.line;
+				delimiterPosition.column = scannedStringPosition.column;
 				break;
 			}
 			else
@@ -169,15 +183,18 @@ public:
 				char ch;
 				if (ReadArguments(ch))
 				{
+					++scannedStringPosition.column;
 					result += ch;
 				}
 				else
 				{
+					++scannedStringPosition.line;
 					SkipLine();
 				}
 			}
 		}
-		scanned = result;
+		scannedString = result;
+		scannedStringPosition.column -= scannedString.length();
 		return true;
 	}
 
@@ -221,14 +238,14 @@ public:
 				return false;
 			}
 			std::string delimiter;
-			long savedLine = m_line;
-			long savedColumn = m_column;
+			long savedLine = m_position.line;
+			long savedColumn = m_position.column;
 			if (FindDelimiter(strings, delimiter))
 			{
 				result = true;
 				m_is.seekg(-delimiter.length(), m_is.cur);
-				m_line = savedLine;
-				m_column = savedColumn;
+				m_position.line = savedLine;
+				m_position.column = savedColumn;
 				break;
 			}
 			GetChar();
@@ -236,14 +253,9 @@ public:
 		return result;
 	}
 
-	long GetLine()
+	const Position & GetPosition()
 	{
-		return m_line;
-	}
-
-	long GetColumn()
-	{
-		return m_column;
+		return m_position;
 	}
 
 private:
@@ -254,11 +266,11 @@ private:
 		{
 			if (m_is.tellg() != -1)
 			{
-				m_column = m_is.tellg() + 1;
+				m_position.column = m_is.tellg() + 1;
 			}
 			else
 			{
-				m_column = m_lastPosition;
+				m_position.column = m_lastPosition;
 			}
 			return true;
 		}
@@ -397,8 +409,8 @@ private:
 	{
 		if (m_is.peek() == ENDL_SYMBOL_CODE_CR)
 		{
-			long savedLine = m_line;
-			long savedColumn = m_column;
+			long savedLine = m_position.line;
+			long savedColumn = m_position.column;
 			char nextSymbol;
 			m_is.get(nextSymbol);
 			if (m_is.peek() == ENDL_SYMBOL_CODE_LF)
@@ -408,8 +420,8 @@ private:
 			else
 			{
 				m_is.seekg(-1, std::ios::cur);
-				m_line = savedLine;
-				m_column = savedColumn;
+				m_position.line = savedLine;
+				m_position.column = savedColumn;
 				return true;
 			}
 		}
@@ -422,8 +434,8 @@ private:
 
 	bool FindDelimiter(const std::vector<std::string> & delimiters, std::string & result)
 	{
-		size_t savedLine = m_line;
-		size_t savedColumn = m_column;
+		long savedLine = m_position.line;
+		long savedColumn = m_position.column;
 		for (const std::string & delimiter : delimiters)
 		{
 			std::string possibleDelimiter;
@@ -451,8 +463,8 @@ private:
 			if (!possibleDelimiter.empty())
 			{
 				m_is.seekg(-possibleDelimiter.length(), m_is.cur);
-				m_line = savedLine;
-				m_column = savedColumn;
+				m_position.line = savedLine;
+				m_position.column = savedColumn;
 			}
 		}
 		result.clear();
@@ -470,12 +482,12 @@ private:
 	{
 		if (IsEndOfLine() && !IsEndOfStream())
 		{
-			m_line = m_line + 1;
-			m_column = 0;
+			m_position.line += 1;
+			m_position.column = 0;
 		}
 		if (m_is.get(ch))
 		{
-			m_column = m_column + 1;
+			m_position.column += 1;
 			return true;
 		}
 		return false;
@@ -494,6 +506,5 @@ private:
 	std::istream & m_is = m_inputFile;
 
 	long m_lastPosition;
-	long m_line = 1;
-	long m_column = 1;
+	Position m_position = {1, 1};
 };
