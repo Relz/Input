@@ -228,13 +228,15 @@ public:
 		return symbolReached;
 	}
 
-	bool SkipUntilStrings(const std::vector<std::string> & strings)
+	bool SkipUntilStrings(const std::vector<std::string> & strings, std::string & skippedString)
 	{
 		bool result = false;
+		std::string possibleSkippedString;
 		while(true)
 		{
 			if (m_is.eof())
 			{
+				skippedString = std::move(possibleSkippedString);
 				return false;
 			}
 			std::string delimiter;
@@ -243,12 +245,17 @@ public:
 			if (FindDelimiter(strings, delimiter))
 			{
 				result = true;
+				skippedString = std::move(possibleSkippedString);
 				m_is.seekg(-delimiter.length(), m_is.cur);
 				m_position.line = savedLine;
 				m_position.column = savedColumn;
 				break;
 			}
-			GetChar();
+			char ch;
+			if (GetChar(ch))
+			{
+				possibleSkippedString += ch;
+			}
 		}
 		return result;
 	}
