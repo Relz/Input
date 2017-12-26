@@ -203,8 +203,9 @@ public:
 		return m_is.peek() == std::ifstream::traits_type::eof();
 	}
 
-	bool SkipUntilSymbols(const std::vector<char> & symbols)
+	bool SkipUntilSymbols(const std::vector<char> & symbols, std::string & skippedString)
 	{
+		std::string possibleSkippedString;
 		bool symbolReached = false;
 		while(!symbolReached)
 		{
@@ -212,6 +213,7 @@ public:
 			{
 				if (m_is.peek() == std::char_traits<char>::to_int_type(symbol))
 				{
+					skippedString = std::move(possibleSkippedString);
 					symbolReached = true;
 					break;
 				}
@@ -220,9 +222,14 @@ public:
 			{
 				if (m_is.eof())
 				{
+					skippedString = std::move(possibleSkippedString);
 					return false;
 				}
-				GetChar();
+				char ch;
+				if (GetChar(ch))
+				{
+					possibleSkippedString += ch;
+				}
 			}
 		}
 		return symbolReached;
