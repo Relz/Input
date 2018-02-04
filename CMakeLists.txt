@@ -4,7 +4,7 @@ SET(CMAKE_CXX_STANDARD 11)
 
 SET(CMAKE_BUILD_TYPE Debug)
 
-ADD_SUBDIRECTORY(googletest-lib/googletest)
+ADD_SUBDIRECTORY(googletest/googletest)
 
 ADD_SUBDIRECTORY(StreamPosition)
 ADD_SUBDIRECTORY(StreamPositionTest)
