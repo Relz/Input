@@ -9,12 +9,9 @@ template <typename T>
 class VectorSettings: public BaseSettings
 {
 public:
-	char trueChar;
-	std::unordered_map<char, T> rules;
-
 	VectorSettings()
-			: trueChar(NOT_A_CHARACTER)
-			, rules(std::unordered_map<char, T>())
+			: m_trueChar(NOT_A_CHARACTER)
+			, m_rules(std::unordered_map<char, T>())
 	{}
 
 	VectorSettings(
@@ -25,9 +22,23 @@ public:
 			const std::unordered_map<char, T> & rules
 	)
 			: BaseSettings(skipSymbols, readVectorMethod, readLimit)
-			, trueChar(trueChar)
-			, rules(rules)
+			, m_trueChar(trueChar)
+			, m_rules(rules)
 	{}
+
+	char GetTrueChar() const
+	{
+		return m_trueChar;
+	}
+
+	std::unordered_map<char, T> GetRules() const
+	{
+		return m_rules;
+	}
+
+private:
+	char m_trueChar;
+	std::unordered_map<char, T> m_rules;
 };
 
 #endif //PROJECT_VECTORSETTINGS_H

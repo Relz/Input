@@ -50,7 +50,6 @@ IF ( NOT (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "Covera
     MESSAGE( WARNING "Code coverage results with an optimized (non-Debug) build may be misleading" )
 ENDIF() # NOT CMAKE_BUILD_TYPE STREQUAL "Debug"
 
-
 # Param _targetname     The name of new the custom make target
 # Param _testrunner     The name of the target which runs the tests.
 #						MUST return ZERO always, even on errors.

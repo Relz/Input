@@ -1,3 +1,3 @@
-[submodule "InputTest/googletest-lib"]
-	path = InputTest/googletest-lib
+[submodule "googletest-lib"]
+	path = googletest-lib
 	url = https://github.com/google/googletest.git

@@ -1,21 +1,21 @@
 ﻿#include <vector>
-#include <unordered_map>
-#include <iostream>
-#include <fstream>
-#include <limits>
-#include <functional>
-#include "ReadVectorMethod.h"
-#include "ReadLimit.h"
+#include "../StreamPosition/StreamPosition.h"
 #include "BaseSettings.h"
-#include "VectorSettings.h"
 #include "MatrixSettings.h"
-#include "Position.h"
+#include "ReadLimit.h"
+#include "ReadVectorMethod.h"
+#include "VectorSettings.h"
+#include <fstream>
+#include <functional>
+#include <iostream>
+#include <limits>
+#include <unordered_map>
 
 class CInput
 {
 public:
-	explicit CInput(std::istream & is)
-			: m_is(is)
+	explicit CInput(std::istream& is)
+		: m_is(is)
 	{
 		if (IsEndOfStream())
 		{
@@ -25,7 +25,8 @@ public:
 		m_lastPosition = GetStreamLastPosition();
 	}
 
-	explicit CInput(const std::string & inputFileName)
+	explicit CInput(std::string inputFileName)
+		: m_inputFileName(std::move(inputFileName))
 	{
 		m_inputFile.open(inputFileName);
 		if (!m_inputFile.good())
@@ -40,15 +41,15 @@ public:
 		m_lastPosition = GetStreamLastPosition();
 	}
 
-	template<class T>
-	bool SkipArgument()
+	std::string GetInputFileName() const { return m_inputFileName; }
+
+	template <class T> bool SkipArgument()
 	{
 		T tempArgument;
 		return ReadArguments(tempArgument);
 	}
 
-	template<class T>
-	bool SkipArguments(size_t count)
+	template <class T> bool SkipArguments(size_t count)
 	{
 		T tempArgument;
 		while (count != 0)
@@ -64,11 +65,9 @@ public:
 
 	bool SkipLine()
 	{
-		while (!IsEndOfLine() && !IsEndOfStream())
+		while (GetChar())
 		{
-			GetChar();
 		}
-		GetChar();
 		return !IsEndOfStream();
 	}
 
@@ -85,11 +84,11 @@ public:
 		return true;
 	}
 
-	bool SkipSymbols(const std::vector<char> & symbols)
+	bool SkipSymbols(const std::vector<char>& symbols)
 	{
 		bool result = false;
 		bool symbolSkipped = true;
-		while(symbolSkipped)
+		while (symbolSkipped)
 		{
 			symbolSkipped = false;
 			for (char symbol : symbols)
@@ -105,62 +104,54 @@ public:
 		return result;
 	}
 
-	template<typename... Targs>
-	bool ReadArguments(Targs & ... args)
-	{
-		return GetArgumentsFromStream(args...);
-	}
+	template <typename... Targs> bool ReadArguments(Targs&... args) { return GetArgumentsFromStream(args...); }
 
-	template<typename T>
-	bool ReadVector(std::vector<T> & vect, const VectorSettings<T> & settings = VectorSettings<T>())
+	template <typename T> bool ReadVector(std::vector<T>& vect, const VectorSettings<T>& settings = VectorSettings<T>())
 	{
 		return ReadVectorBase<T, T>(vect, settings);
 	}
 
-	template<class TReadElement, typename TVectorElement>
-	bool ReadVector(std::vector<TVectorElement> & vect, const VectorSettings<TVectorElement> & settings = VectorSettings<TVectorElement>())
+	template <class TReadElement, typename TVectorElement>
+	bool ReadVector(std::vector<TVectorElement>& vect,
+		const VectorSettings<TVectorElement>& settings = VectorSettings<TVectorElement>())
 	{
 		return ReadVectorBase<TReadElement>(vect, settings);
 	}
 
-	bool ReadVector(std::vector<bool> & vect, const VectorSettings<bool> & settings = VectorSettings<bool>())
+	bool ReadVector(std::vector<bool>& vect, const VectorSettings<bool>& settings = VectorSettings<bool>())
 	{
 		return ReadVectorBase<char>(vect, settings);
 	}
 
-	template<typename T>
-	bool ReadMatrix(std::vector<std::vector<T>> & matrix, const MatrixSettings & matrixSettings = MatrixSettings(), const VectorSettings<T> & vectorSettings = VectorSettings<T>())
+	template <typename T>
+	bool ReadMatrix(std::vector<std::vector<T>>& matrix, const MatrixSettings& matrixSettings = MatrixSettings(),
+		const VectorSettings<T>& vectorSettings = VectorSettings<T>())
 	{
 		bool enoughRows = true;
-		for (size_t i = 0; i < matrixSettings.readLimit; ++i)
+		for (size_t i = 0; i < matrixSettings.GetReadLimit(); ++i)
 		{
-			SkipSymbols(matrixSettings.skipSymbols);
-			BasePush(matrix, std::vector<T>(), matrixSettings.readMethod);
-			size_t activeContainerIndex = GetActiveContainerIndex(matrix, matrixSettings.readMethod);
+			SkipSymbols(matrixSettings.GetSkipSymbols());
+			BasePush(matrix, std::vector<T>(), matrixSettings.GetReadMethod());
+			size_t activeContainerIndex = GetActiveContainerIndex(matrix, matrixSettings.GetReadMethod());
 			if (!ReadVector(matrix[activeContainerIndex], vectorSettings))
 			{
 				if (matrix[activeContainerIndex].empty())
 				{
-					VectorPop(matrix, matrixSettings.readMethod);
+					VectorPop(matrix, matrixSettings.GetReadMethod());
 				}
 				enoughRows = false;
 				break;
 			}
 			SkipLine();
 		}
-		return !matrix.empty() && (enoughRows || matrixSettings.readLimit == ReadLimit::UNLIMITED);
+		return !matrix.empty() && (enoughRows || matrixSettings.GetReadLimit() == ReadLimit::UNLIMITED);
 	}
 
-	bool Scan(
-			std::vector<std::string> delimiters,
-			std::string & scannedString,
-			Position & scannedStringPosition,
-			std::string & delimiter,
-			Position & delimiterPosition
-	)
+	bool Scan(std::vector<std::string> delimiters, std::string& scannedString, StreamPosition& scannedStringPosition,
+		std::string& delimiter, StreamPosition& delimiterPosition)
 	{
-		scannedStringPosition = Position();
-		delimiterPosition = Position();
+		scannedStringPosition = StreamPosition();
+		delimiterPosition = StreamPosition();
 		std::string result;
 		if (IsEndOfStream())
 		{
@@ -168,14 +159,16 @@ public:
 			delimiter.clear();
 			return false;
 		}
-		scannedStringPosition.line = m_position.line;
-		scannedStringPosition.column = m_position.column;
+		scannedStringPosition.SetLine(m_position.GetLine());
+		scannedStringPosition.SetColumn(m_position.GetColumn());
+		bool delimiterPositionFound = false;
 		while (!IsEndOfStream())
 		{
 			if (FindDelimiter(delimiters, delimiter))
 			{
-				delimiterPosition.line = m_position.line;
-				delimiterPosition.column = scannedStringPosition.column;
+				delimiterPositionFound = true;
+				delimiterPosition.SetLine(m_position.GetLine());
+				delimiterPosition.SetColumn(scannedStringPosition.GetColumn());
 				break;
 			}
 			else
@@ -183,31 +176,32 @@ public:
 				char ch;
 				if (ReadArguments(ch))
 				{
-					++scannedStringPosition.column;
+					scannedStringPosition.IncreaseColumn();
 					result += ch;
 				}
 				else
 				{
-					++scannedStringPosition.line;
+					scannedStringPosition.IncreaseLine();
 					SkipLine();
 				}
 			}
 		}
 		scannedString = result;
-		scannedStringPosition.column -= scannedString.length();
+		scannedStringPosition.DecreaseColumn(scannedString.length());
+		if (!delimiterPositionFound)
+		{
+			delimiterPosition = scannedStringPosition;
+		}
 		return true;
 	}
 
-	bool IsEndOfStream()
-	{
-		return m_is.peek() == std::ifstream::traits_type::eof();
-	}
+	bool IsEndOfStream() const { return m_is.peek() == std::ifstream::traits_type::eof(); }
 
-	bool SkipUntilSymbols(const std::vector<char> & symbols, std::string & skippedString)
+	bool SkipUntilSymbols(const std::vector<char>& symbols, std::string& skippedString)
 	{
 		std::string possibleSkippedString;
 		bool symbolReached = false;
-		while(!symbolReached)
+		while (!symbolReached)
 		{
 			for (char symbol : symbols)
 			{
@@ -220,7 +214,7 @@ public:
 			}
 			if (!symbolReached)
 			{
-				if (m_is.eof())
+				if (IsEndOfStream())
 				{
 					skippedString = std::move(possibleSkippedString);
 					return false;
@@ -235,77 +229,63 @@ public:
 		return symbolReached;
 	}
 
-	bool SkipUntilStrings(const std::vector<std::string> & strings, std::string & skippedString)
+	bool SkipUntilStrings(const std::vector<std::string>& strings, std::string& skippedString)
 	{
-		bool result = false;
 		std::string possibleSkippedString;
-		while(true)
+		while (true)
 		{
-			if (m_is.eof())
+			std::string delimiter;
+			long savedLine = m_position.GetLine();
+			long savedColumn = m_position.GetColumn();
+			if (FindDelimiter(strings, delimiter))
+			{
+				skippedString = std::move(possibleSkippedString);
+				m_is.seekg(-delimiter.length(), m_is.cur);
+				m_position.SetLine(savedLine);
+				m_position.SetColumn(savedColumn);
+				return true;
+			}
+			if (IsEndOfStream())
 			{
 				skippedString = std::move(possibleSkippedString);
 				return false;
 			}
-			std::string delimiter;
-			long savedLine = m_position.line;
-			long savedColumn = m_position.column;
-			if (FindDelimiter(strings, delimiter))
-			{
-				result = true;
-				skippedString = std::move(possibleSkippedString);
-				m_is.seekg(-delimiter.length(), m_is.cur);
-				m_position.line = savedLine;
-				m_position.column = savedColumn;
-				break;
-			}
 			char ch;
-			if (GetChar(ch))
-			{
-				possibleSkippedString += ch;
-			}
+			GetChar(ch);
+			possibleSkippedString += ch;
 		}
-		return result;
 	}
 
-	const Position & GetPosition()
-	{
-		return m_position;
-	}
+	const StreamPosition& GetPosition() const { return m_position; }
 
 private:
-	template<class T>
-	bool GetArgumentFromStream(T & arg)
+	template <class T> bool GetArgumentFromStream(T& arg)
 	{
-		if (!IsEndOfLine() && !m_is.eof() && m_is >> arg)
+		if (!IsEndOfLine() && !IsEndOfStream() && m_is >> arg)
 		{
 			if (m_is.tellg() != -1)
 			{
-				m_position.column = m_is.tellg() + 1;
+				m_position.SetColumn(m_is.tellg() + 1);
 			}
 			else
 			{
-				m_position.column = m_lastPosition;
+				m_position.SetColumn(m_lastPosition);
 			}
 			return true;
 		}
 		return false;
 	}
 
-	bool GetArgumentFromStream(char & arg)
-	{
-		return (!IsEndOfLine() && !m_is.eof() && GetChar(arg));
-	}
+	bool GetArgumentFromStream(char& arg) { return (!IsEndOfLine() && !IsEndOfStream() && GetChar(arg)); }
 
 	bool GetArgumentsFromStream() { return true; }
 
-	template<typename T, typename... Targs>
-	bool GetArgumentsFromStream(T & arg, Targs & ... args)
+	template <typename T, typename... Targs> bool GetArgumentsFromStream(T& arg, Targs&... args)
 	{
 		return GetArgumentFromStream(arg) && GetArgumentsFromStream(args...);
 	}
 
-	template<typename T>
-	void BasePush(std::vector<T> & vect, const T & elem, const ReadVectorMethod readVectorMethod)
+	template <typename T> void BasePush(std::vector<T>& vect, const T& elem, const ReadVectorMethod readVectorMethod)
 	{
 		if (readVectorMethod == PUSH_BACK)
 		{
@@ -317,63 +297,64 @@ private:
 		}
 	}
 
-	template<typename T>
-	bool VectorPush(std::vector<T> & vect, const T & elem, const VectorSettings<T> & settings = VectorSettings<T>())
+	template <typename T>
+	bool VectorPush(std::vector<T>& vect, const T& elem, const VectorSettings<T>& settings = VectorSettings<T>())
 	{
 		T elemToPush = elem;
-		if (!settings.rules.empty())
+		if (!settings.GetRules().empty())
 		{
-			if (settings.rules.find(elem) == settings.rules.end())
+			if (settings.GetRules().find(elem) == settings.GetRules().end())
 			{
 				return false;
 			}
-			elemToPush = settings.rules.at(elem);
+			elemToPush = settings.GetRules().at(elem);
 		}
-		BasePush(vect, elemToPush, settings.readMethod);
+		BasePush(vect, elemToPush, settings.GetReadMethod());
 		return true;
 	}
 
-	template<typename TReadElement, typename TVectorElement>
-	bool VectorPush(std::vector<TVectorElement> & vect, const TReadElement & elem, const VectorSettings<TVectorElement> & settings = VectorSettings<TVectorElement>())
+	template <typename TReadElement, typename TVectorElement>
+	bool VectorPush(std::vector<TVectorElement>& vect, const TReadElement& elem,
+		const VectorSettings<TVectorElement>& settings = VectorSettings<TVectorElement>())
 	{
-		if (!settings.rules.empty())
+		if (!settings.GetRules().empty())
 		{
-			if (settings.rules.find(elem) == settings.rules.end())
+			if (settings.GetRules().find(elem) == settings.GetRules().end())
 			{
 				return false;
 			}
-			TVectorElement elemToPush = settings.rules.at(elem);
-			BasePush(vect, elemToPush, settings.readMethod);
+			TVectorElement elemToPush = settings.GetRules().at(elem);
+			BasePush(vect, elemToPush, settings.GetReadMethod());
 			return true;
 		}
 		return false;
 	}
 
-	bool VectorPush(std::vector<bool> & vect, const char & elem, const VectorSettings<bool> & settings = VectorSettings<bool>())
+	bool VectorPush(
+		std::vector<bool>& vect, const char& elem, const VectorSettings<bool>& settings = VectorSettings<bool>())
 	{
-		if (settings.trueChar == NOT_A_CHARACTER && settings.rules.empty())
+		if (settings.GetTrueChar() == NOT_A_CHARACTER && settings.GetRules().empty())
 		{
 			throw(std::invalid_argument("True char and rules are not specified"));
 		}
 		bool elemToPush;
-		if (settings.trueChar != NOT_A_CHARACTER)
+		if (settings.GetTrueChar() != NOT_A_CHARACTER)
 		{
-			elemToPush = elem == settings.trueChar;
+			elemToPush = elem == settings.GetTrueChar();
 		}
 		else
 		{
-			if (settings.rules.find(elem) == settings.rules.end())
+			if (settings.GetRules().find(elem) == settings.GetRules().end())
 			{
 				return false;
 			}
-			elemToPush = settings.rules.at(elem);
+			elemToPush = settings.GetRules().at(elem);
 		}
-		BasePush(vect, elemToPush, settings.readMethod);
+		BasePush(vect, elemToPush, settings.GetReadMethod());
 		return true;
 	}
 
-	template<typename T>
-	void VectorPop(std::vector<T> & vect, ReadVectorMethod readVectorMethod)
+	template <typename T> void VectorPop(std::vector<T>& vect, ReadVectorMethod readVectorMethod)
 	{
 		if (readVectorMethod == PUSH_BACK)
 		{
@@ -385,8 +366,7 @@ private:
 		}
 	}
 
-	template <typename T>
-	size_t GetActiveContainerIndex(std::vector<T> & vect, ReadVectorMethod readVectorMethod)
+	template <typename T> size_t GetActiveContainerIndex(std::vector<T>& vect, ReadVectorMethod readVectorMethod)
 	{
 		if (readVectorMethod == PUSH_BACK)
 		{
@@ -398,64 +378,64 @@ private:
 		}
 	}
 
-	template<class TReadElement, typename TVectorElement>
-	bool ReadVectorBase(std::vector<TVectorElement> & vect, const VectorSettings<TVectorElement> & settings)
+	template <class TReadElement, typename TVectorElement>
+	bool ReadVectorBase(std::vector<TVectorElement>& vect, const VectorSettings<TVectorElement>& settings)
 	{
 		bool result = false;
 		TReadElement elem;
-		while (vect.size() != settings.readLimit && GetArgumentFromStream(elem))
+		while (vect.size() != settings.GetReadLimit() && GetArgumentFromStream(elem))
 		{
 			if (!VectorPush(vect, elem, settings))
 			{
 				result = false;
 				break;
 			}
-			SkipSymbols(settings.skipSymbols);
+			SkipSymbols(settings.GetSkipSymbols());
 			result = true;
 		}
-		return result && (vect.size() == settings.readLimit || settings.readLimit == ReadLimit::UNLIMITED);
+		return result && (vect.size() == settings.GetReadLimit() || settings.GetReadLimit() == ReadLimit::UNLIMITED);
 	}
 
-	static const int ENDL_SYMBOL_CODE_LF = 10;
-	static const int ENDL_SYMBOL_CODE_CR = 13;
+	static const int _ENDL_SYMBOL_CODE_LF = 10;
+	static const int _ENDL_SYMBOL_CODE_CR = 13;
 
 	bool IsEndOfLine()
 	{
-		if (m_is.peek() == ENDL_SYMBOL_CODE_CR)
+		if (m_is.peek() == _ENDL_SYMBOL_CODE_CR)
 		{
-			long savedLine = m_position.line;
-			long savedColumn = m_position.column;
+			long savedLine = m_position.GetLine();
+			long savedColumn = m_position.GetColumn();
 			char nextSymbol;
 			m_is.get(nextSymbol);
-			if (m_is.peek() == ENDL_SYMBOL_CODE_LF)
+			if (m_is.peek() == _ENDL_SYMBOL_CODE_LF)
 			{
 				return true;
 			}
 			else
 			{
 				m_is.seekg(-1, std::ios::cur);
-				m_position.line = savedLine;
-				m_position.column = savedColumn;
+				m_position.SetLine(savedLine);
+				m_position.SetColumn(savedColumn);
 				return true;
 			}
 		}
-		else if (m_is.peek() == ENDL_SYMBOL_CODE_LF)
+		else if (m_is.peek() == _ENDL_SYMBOL_CODE_LF)
 		{
 			return true;
 		}
 		return false;
 	}
 
-	bool FindDelimiter(const std::vector<std::string> & delimiters, std::string & result)
+	bool FindDelimiter(const std::vector<std::string>& delimiters, std::string& result)
 	{
-		long savedLine = m_position.line;
-		long savedColumn = m_position.column;
-		for (const std::string & delimiter : delimiters)
+		long savedLine = m_position.GetLine();
+		long savedColumn = m_position.GetColumn();
+		for (const std::string& delimiter : delimiters)
 		{
 			std::string possibleDelimiter;
 			bool found = true;
 			char ch;
-			while (possibleDelimiter.length() < delimiter.length() && !m_is.eof() && GetChar(ch))
+			while (possibleDelimiter.length() < delimiter.length() && !IsEndOfStream() && !IsEndOfLine() && GetChar(ch))
 			{
 				possibleDelimiter += ch;
 				size_t index = possibleDelimiter.length() - 1;
@@ -477,8 +457,8 @@ private:
 			if (!possibleDelimiter.empty())
 			{
 				m_is.seekg(-possibleDelimiter.length(), m_is.cur);
-				m_position.line = savedLine;
-				m_position.column = savedColumn;
+				m_position.SetLine(savedLine);
+				m_position.SetColumn(savedColumn);
 			}
 		}
 		result.clear();
@@ -492,19 +472,21 @@ private:
 		return GetChar(ch);
 	}
 
-	bool GetChar(char & ch)
+	bool GetChar(char& ch)
 	{
-		if (IsEndOfLine() && !IsEndOfStream())
+		bool isEndOfLine = IsEndOfLine();
+		bool isEndOfStream = IsEndOfStream();
+		bool result = !isEndOfLine && !isEndOfStream;
+		if (isEndOfLine && !isEndOfStream)
 		{
-			m_position.line += 1;
-			m_position.column = 0;
+			m_position.IncreaseLine();
+			m_position.ResetColumn();
 		}
-		if (m_is.get(ch))
+		if (m_is.get(ch) && !isEndOfLine)
 		{
-			m_position.column += 1;
-			return true;
+			m_position.IncreaseColumn();
 		}
-		return false;
+		return result;
 	}
 
 	long GetStreamLastPosition()
@@ -516,9 +498,10 @@ private:
 		return result;
 	}
 
+	std::string m_inputFileName;
 	std::ifstream m_inputFile;
-	std::istream & m_is = m_inputFile;
+	std::istream& m_is = m_inputFile;
 
 	long m_lastPosition;
-	Position m_position = {1, 1};
+	StreamPosition m_position;
 };
