@@ -68,9 +68,18 @@ TEST(read_vector_template_function, can_push_front)
 	stringstream is("0 1 2 3");
 	CInput input(is);
 	vector<int> numbers;
-	EXPECT_TRUE(input.ReadVector(numbers,
-		{ vector<char>(), ReadVectorMethod::PUSH_FRONT, ReadLimit::UNLIMITED, NOT_A_CHARACTER,
-			unordered_map<char, int>() }));
+	EXPECT_TRUE(
+		input.ReadVector(
+			numbers,
+			{
+				vector<char>(),
+				ReadVectorMethod::PUSH_FRONT,
+				ReadLimit::UNLIMITED,
+				NOT_A_CHARACTER,
+				unordered_map<char, int>()
+			}
+		)
+	);
 	EXPECT_EQ(numbers, expectedVector);
 }
 
@@ -80,8 +89,18 @@ TEST(read_vector_template_function, can_skip_empty_lines)
 	stringstream is("0 1 2 3\n4 5 6 7\n\n8 9 10 11");
 	CInput input(is);
 	vector<int> numbers;
-	EXPECT_TRUE(input.ReadVector(numbers,
-		{ { '\n' }, ReadVectorMethod::PUSH_BACK, ReadLimit::UNLIMITED, NOT_A_CHARACTER, unordered_map<char, int>() }));
+	EXPECT_TRUE(
+		input.ReadVector(
+			numbers,
+			{
+				{ '\n' },
+				ReadVectorMethod::PUSH_BACK,
+				ReadLimit::UNLIMITED,
+				NOT_A_CHARACTER,
+				unordered_map<char, int>()
+			}
+		)
+	);
 	EXPECT_EQ(numbers, expectedVector);
 }
 
@@ -91,8 +110,18 @@ TEST(read_vector_template_function, can_have_limit)
 	stringstream is("0 1 2 3");
 	CInput input(is);
 	vector<int> numbers;
-	EXPECT_TRUE(input.ReadVector(
-		numbers, { vector<char>(), ReadVectorMethod::PUSH_BACK, 3, NOT_A_CHARACTER, unordered_map<char, int>() }));
+	EXPECT_TRUE(
+		input.ReadVector(
+			numbers,
+			{
+				vector<char>(),
+				ReadVectorMethod::PUSH_BACK,
+				3,
+				NOT_A_CHARACTER,
+				unordered_map<char, int>()
+			}
+		)
+	);
 	EXPECT_EQ(numbers, expectedVector);
 }
 
@@ -101,10 +130,16 @@ TEST(read_vector_template_function, throws_exception_if_rules_and_true_char_are_
 	stringstream is("0 1 2 3");
 	CInput input(is);
 	vector<bool> numbers;
-	EXPECT_THROW(input.ReadVector(numbers,
-					 { vector<char>(), ReadVectorMethod::PUSH_BACK, ReadLimit::UNLIMITED, NOT_A_CHARACTER,
-						 unordered_map<char, bool>() }),
-		invalid_argument);
+	EXPECT_THROW(
+		input.ReadVector(
+			numbers,
+			{
+				vector<char>(), ReadVectorMethod::PUSH_BACK, ReadLimit::UNLIMITED, NOT_A_CHARACTER,
+				unordered_map<char, bool>()
+			}
+		),
+		invalid_argument
+	);
 }
 
 TEST(read_vector_template_function, reads_until_end_of_line_lf)

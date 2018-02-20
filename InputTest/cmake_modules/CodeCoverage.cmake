@@ -79,7 +79,7 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _outputname _browserc
 
             # Capturing lcov counters and generating report
             COMMAND ${LCOV_PATH} --rc lcov_branch_coverage=1 --directory . --capture --output-file ${_outputname}.info
-            COMMAND ${LCOV_PATH} --rc lcov_branch_coverage=1 --remove ${_outputname}.info 'build/*' 'tests/*' '/usr/*' '${gtest_SOURCE_DIR}/*' --output-file ${_outputname}.info.cleaned
+            COMMAND ${LCOV_PATH} --rc lcov_branch_coverage=1 --remove ${_outputname}.info 'build/*' 'tests/*' '/usr/*' '${gtest_SOURCE_DIR}/*' '*/**/StreamPosition/*' --output-file ${_outputname}.info.cleaned
             COMMAND ${GENHTML_PATH} --rc lcov_branch_coverage=1 -o ${_outputname} ${_outputname}.info.cleaned
             COMMAND ${CMAKE_COMMAND} -E remove ${_outputname}.info ${_outputname}.info.cleaned
 

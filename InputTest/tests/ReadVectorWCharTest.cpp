@@ -31,9 +31,18 @@ TEST(read_vector_wchar_function, can_push_front)
 	stringstream is("0123");
 	CInput input(is);
 	vector<char> wChars;
-	EXPECT_TRUE(input.ReadVector(wChars,
-		{ vector<char>(), ReadVectorMethod::PUSH_FRONT, ReadLimit::UNLIMITED, NOT_A_CHARACTER,
-			unordered_map<char, char>() }));
+	EXPECT_TRUE(
+		input.ReadVector(
+			wChars,
+			{
+				vector<char>(),
+				ReadVectorMethod::PUSH_FRONT,
+				ReadLimit::UNLIMITED,
+				NOT_A_CHARACTER,
+				unordered_map<char, char>()
+			}
+		)
+	);
 	EXPECT_EQ(wChars, expectedVector);
 }
 
@@ -53,9 +62,18 @@ TEST(read_vector_wchar_function, does_not_beginning_with_skipping)
 	stringstream is("     \n\n\n             .#.#..#");
 	CInput input(is);
 	vector<char> wChars;
-	EXPECT_TRUE(input.ReadVector(wChars,
-		{ { ' ', '\n' }, ReadVectorMethod::PUSH_BACK, ReadLimit::UNLIMITED, NOT_A_CHARACTER,
-			unordered_map<char, char>() }));
+	EXPECT_TRUE(
+		input.ReadVector(
+			wChars,
+			{
+				{ ' ', '\n' },
+				ReadVectorMethod::PUSH_BACK,
+				ReadLimit::UNLIMITED,
+				NOT_A_CHARACTER,
+				unordered_map<char, char>()
+			}
+		)
+	);
 	EXPECT_EQ(wChars, expectedVector);
 }
 
@@ -65,9 +83,18 @@ TEST(read_vector_wchar_function, can_skip_whitespaces_and_empty_lines)
 	stringstream is(".#     \n\n\n             .#..#");
 	CInput input(is);
 	vector<char> wChars;
-	EXPECT_TRUE(input.ReadVector(wChars,
-		{ { ' ', '\n' }, ReadVectorMethod::PUSH_BACK, ReadLimit::UNLIMITED, NOT_A_CHARACTER,
-			unordered_map<char, char>() }));
+	EXPECT_TRUE(
+		input.ReadVector(
+			wChars,
+			{
+				{ ' ', '\n' },
+				ReadVectorMethod::PUSH_BACK,
+				ReadLimit::UNLIMITED,
+				NOT_A_CHARACTER,
+				unordered_map<char, char>()
+			}
+		)
+	);
 	EXPECT_EQ(wChars, expectedVector);
 }
 
@@ -77,7 +104,17 @@ TEST(read_vector_wchar_function, can_have_limit)
 	stringstream is(".#.#..#");
 	CInput input(is);
 	vector<char> wChars;
-	EXPECT_TRUE(input.ReadVector(
-		wChars, { vector<char>(), ReadVectorMethod::PUSH_BACK, 3, NOT_A_CHARACTER, unordered_map<char, char>() }));
+	EXPECT_TRUE(
+		input.ReadVector(
+			wChars,
+			{
+				vector<char>(),
+				ReadVectorMethod::PUSH_BACK,
+				3,
+				NOT_A_CHARACTER,
+				unordered_map<char, char>()
+			}
+		)
+	);
 	EXPECT_EQ(wChars, expectedVector);
 }

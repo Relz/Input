@@ -12,8 +12,18 @@ TEST(read_vector_with_true_char_function, returns_false_if_can_not_read_any_elem
 	int arg0;
 	vector<bool> booleans;
 	input.ReadArguments(arg0);
-	EXPECT_FALSE(input.ReadVector(booleans,
-		{ vector<char>(), ReadVectorMethod::PUSH_BACK, ReadLimit::UNLIMITED, '#', unordered_map<char, bool>() }));
+	EXPECT_FALSE(
+		input.ReadVector(
+			booleans,
+			{
+				vector<char>(),
+				ReadVectorMethod::PUSH_BACK,
+				ReadLimit::UNLIMITED,
+				'#',
+				unordered_map<char, bool>()
+			}
+		)
+	);
 }
 
 TEST(read_vector_with_true_char_function, push_back_by_default)
@@ -22,8 +32,18 @@ TEST(read_vector_with_true_char_function, push_back_by_default)
 	stringstream is(".#%#X@#");
 	CInput input(is);
 	vector<bool> booleans;
-	EXPECT_TRUE(input.ReadVector(booleans,
-		{ vector<char>(), ReadVectorMethod::PUSH_BACK, ReadLimit::UNLIMITED, '#', unordered_map<char, bool>() }));
+	EXPECT_TRUE(
+		input.ReadVector(
+			booleans,
+			{
+				vector<char>(),
+				ReadVectorMethod::PUSH_BACK,
+				ReadLimit::UNLIMITED,
+				'#',
+				unordered_map<char, bool>()
+			}
+		)
+	);
 	EXPECT_EQ(booleans, expectedVector);
 }
 
@@ -33,8 +53,18 @@ TEST(read_vector_with_true_char_function, can_push_front)
 	stringstream is(".#.#..#");
 	CInput input(is);
 	vector<bool> booleans;
-	EXPECT_TRUE(input.ReadVector(booleans,
-		{ vector<char>(), ReadVectorMethod::PUSH_FRONT, ReadLimit::UNLIMITED, '#', unordered_map<char, bool>() }));
+	EXPECT_TRUE(
+		input.ReadVector(
+			booleans,
+			{
+				vector<char>(),
+				ReadVectorMethod::PUSH_FRONT,
+				ReadLimit::UNLIMITED,
+				'#',
+				unordered_map<char, bool>()
+			}
+		)
+	);
 	EXPECT_EQ(booleans, expectedVector);
 }
 
@@ -44,8 +74,18 @@ TEST(read_vector_with_true_char_function, do_not_skip_whitespaces_and_empty_line
 	stringstream is("    \n\n\n   .#.#..#");
 	CInput input(is);
 	vector<bool> booleans;
-	EXPECT_TRUE(input.ReadVector(booleans,
-		{ vector<char>(), ReadVectorMethod::PUSH_BACK, ReadLimit::UNLIMITED, '#', unordered_map<char, bool>() }));
+	EXPECT_TRUE(
+		input.ReadVector(
+			booleans,
+			{
+				vector<char>(),
+				ReadVectorMethod::PUSH_BACK,
+				ReadLimit::UNLIMITED,
+				'#',
+				unordered_map<char, bool>()
+			}
+		)
+	);
 	EXPECT_EQ(booleans, expectedVector);
 }
 
@@ -55,8 +95,18 @@ TEST(read_vector_with_true_char_function, can_skip_whitespaces_and_empty_lines_b
 	stringstream is("    \n\n\n   .#.#..#");
 	CInput input(is);
 	vector<bool> booleans;
-	EXPECT_TRUE(input.ReadVector(booleans,
-		{ { ' ', '\n' }, ReadVectorMethod::PUSH_BACK, ReadLimit::UNLIMITED, '#', unordered_map<char, bool>() }));
+	EXPECT_TRUE(
+		input.ReadVector(
+			booleans,
+			{
+				{ ' ', '\n' },
+				ReadVectorMethod::PUSH_BACK,
+				ReadLimit::UNLIMITED,
+				'#',
+				unordered_map<char, bool>()
+			}
+		)
+	);
 	EXPECT_EQ(booleans, expectedVector);
 }
 
@@ -66,7 +116,17 @@ TEST(read_vector_with_true_char_function, can_have_limit)
 	stringstream is(".#.#..#");
 	CInput input(is);
 	vector<bool> booleans;
-	EXPECT_TRUE(input.ReadVector(
-		booleans, { vector<char>(), ReadVectorMethod::PUSH_BACK, 3, '#', unordered_map<char, bool>() }));
+	EXPECT_TRUE(
+		input.ReadVector(
+			booleans,
+			{
+				vector<char>(),
+				ReadVectorMethod::PUSH_BACK,
+				3,
+				'#',
+				unordered_map<char, bool>()
+			}
+		)
+	);
 	EXPECT_EQ(booleans, expectedVector);
 }
