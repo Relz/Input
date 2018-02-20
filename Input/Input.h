@@ -28,7 +28,7 @@ public:
 	explicit CInput(std::string inputFileName)
 		: m_inputFileName(std::move(inputFileName))
 	{
-		m_inputFile.open(inputFileName);
+		m_inputFile.open(m_inputFileName);
 		if (!m_inputFile.good())
 		{
 			throw std::invalid_argument("File \"" + inputFileName + "\" doesn't exists");
