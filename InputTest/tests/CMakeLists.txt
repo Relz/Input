@@ -15,7 +15,7 @@ SET(SOURCE_FILES
 		ReadVectorWithTrueCharTest.cpp
 		ReadMatrixTemplateTest.cpp
 		ScanTest.cpp
-		SkipUntilStringsTest.cpp)
+		SkipUntilStringsTest.cpp GetFileNameTest.cpp)
 
 ADD_EXECUTABLE(InputTest ${SOURCE_FILES})
 

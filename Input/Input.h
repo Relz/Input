@@ -24,22 +24,22 @@ public:
 		m_lastPosition = CalculateStreamLastPosition();
 	}
 
-	explicit CInput(std::string inputFileName)
-		: m_inputFileName(std::move(inputFileName))
+	explicit CInput(std::string fileName)
+		: m_fileName(std::move(fileName))
 	{
-		m_inputFile.open(m_inputFileName);
+		m_inputFile.open(m_fileName);
 		if (!m_inputFile.good())
 		{
-			throw std::invalid_argument("File \"" + inputFileName + "\" doesn't exists");
+			throw std::invalid_argument("File \"" + m_fileName + "\" doesn't exists");
 		}
 		if (IsEndOfStream())
 		{
-			throw std::invalid_argument("File \"" + inputFileName + "\" is empty");
+			throw std::invalid_argument("File \"" + m_fileName + "\" is empty");
 		}
 		m_lastPosition = CalculateStreamLastPosition();
 	}
 
-	std::string const& GetInputFileName() const { return m_inputFileName; }
+	std::string const& GetFileName() const { return m_fileName; }
 
 	template <class T> bool SkipArgument()
 	{
@@ -540,7 +540,7 @@ private:
 		return false;
 	}
 
-	std::string m_inputFileName;
+	std::string m_fileName;
 	std::ifstream m_inputFile;
 	std::istream & m_is = m_inputFile;
 
