@@ -4,8 +4,8 @@
 
 using namespace std;
 
-const char SPACE_SYMBOL = ' ';
-const char ENDL_SYMBOL = '\n';
+char const SPACE_SYMBOL = ' ';
+char const ENDL_SYMBOL = '\n';
 
 TEST(skip_symbols_function, skips_single_symbol_and_returns_true_if_any_symbol_was_skipped)
 {

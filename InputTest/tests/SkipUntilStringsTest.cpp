@@ -4,9 +4,6 @@
 
 using namespace std;
 
-const std::string SPACE_STRING = " ";
-const std::string ENDL_STRING = "\n";
-
 TEST(skip_until_strings_function, skips_until_strings_and_returns_true_if_any_symbol_was_reached)
 {
 	{
@@ -17,29 +14,27 @@ TEST(skip_until_strings_function, skips_until_strings_and_returns_true_if_any_sy
 		EXPECT_EQ(input.GetPosition().GetLine(), 1);
 		EXPECT_EQ(input.GetPosition().GetColumn(), 25);
 		EXPECT_EQ(skippedString, "                #       ");
-		char tmp;
-		input.ReadArguments(tmp);
+		input.SkipArgument<char>();
 		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('$'));
 	}
 	{
 		stringstream is("#");
 		CInput input(is);
 		std::string skippedString;
-		EXPECT_FALSE(input.SkipUntilStrings({ SPACE_STRING }, skippedString));
+		EXPECT_FALSE(input.SkipUntilStrings({ " " }, skippedString));
 		EXPECT_TRUE(is.eof());
 		EXPECT_EQ(input.GetPosition().GetLine(), 1);
 		EXPECT_EQ(input.GetPosition().GetColumn(), 2);
 		EXPECT_EQ(skippedString, "#");
 	}
 	{
-		stringstream is("%\n\n\n\n\n\n\n\n\n\n\n#");
+		stringstream is("%\n\na\nb\nc\nd\ne\nf\ng\nh\ni\nj\n#");
 		CInput input(is);
 		std::string skippedString;
 		EXPECT_TRUE(input.SkipUntilStrings({ "#" }, skippedString));
-		EXPECT_EQ(input.GetPosition().GetLine(), 12);
+		EXPECT_EQ(input.GetPosition().GetLine(), 13);
 		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
-		char tmp;
-		input.ReadArguments(tmp, tmp);
+		input.SkipArguments<char>(2);
 		EXPECT_TRUE(is.eof());
 	}
 }
@@ -50,19 +45,18 @@ TEST(skip_until_strings_function, skips_multiple_strings)
 		stringstream is("  abcaa\n      \n\n\n\n\n   \n\n\n\n   #");
 		CInput input(is);
 		std::string skippedString;
-		EXPECT_TRUE(input.SkipUntilStrings({ "aa", ENDL_STRING }, skippedString));
+		EXPECT_TRUE(input.SkipUntilStrings({ "aa", "\n" }, skippedString));
 		EXPECT_EQ(input.GetPosition().GetLine(), 1);
 		EXPECT_EQ(input.GetPosition().GetColumn(), 6);
 		EXPECT_EQ(skippedString, "  abc");
-		char tmp;
-		input.ReadArguments(tmp, tmp);
+		input.SkipArguments<char>(2);
 		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('\n'));
 	}
 	{
 		stringstream is("#");
 		CInput input(is);
 		std::string skippedString;
-		EXPECT_FALSE(input.SkipUntilStrings({ SPACE_STRING, ENDL_STRING }, skippedString));
+		EXPECT_FALSE(input.SkipUntilStrings({ " ", "\n" }, skippedString));
 		EXPECT_TRUE(is.eof());
 		EXPECT_EQ(input.GetPosition().GetLine(), 1);
 		EXPECT_EQ(input.GetPosition().GetColumn(), 2);

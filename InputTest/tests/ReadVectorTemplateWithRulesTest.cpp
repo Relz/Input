@@ -5,15 +5,15 @@
 
 using namespace std;
 
-const unordered_map<char, bool> RULES_BOOLS = { { '.', false }, { '#', true } };
+unordered_map<char, bool> const RULES_BOOLS = { { '.', false }, { '#', true } };
 
-const unordered_map<char, size_t> RULES_NUMBERS = {
+unordered_map<char, size_t> const RULES_NUMBERS = {
 	{ '.', 0 },
 	{ '#', 1 },
 	{ '@', 2 },
 };
 
-const unordered_map<char, char> RULES_SYMBOLS = {
+unordered_map<char, char> const RULES_SYMBOLS = {
 	{ '.', 'A' },
 	{ '#', 'B' },
 	{ '@', 'C' },

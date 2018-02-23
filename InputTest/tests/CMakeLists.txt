@@ -7,7 +7,7 @@ SET(SOURCE_FILES
 		SkipLineTest.cpp
 		SkipLinesTest.cpp
 		SkipSymbolsTest.cpp
-		SkipUntilSymbolsTest.cpp
+		SkipUntilCharactersTest.cpp
 		ReadArgumentsTest.cpp
 		ReadVectorTemplateTest.cpp
 		ReadVectorTemplateWithRulesTest.cpp
