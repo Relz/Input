@@ -127,16 +127,16 @@ public:
 	{
 		std::vector<std::vector<T>> possibleMatrix;
 		bool enoughRows = true;
-		for (size_t i = 0; i < matrixSettings.GetReadLimit(); ++i)
+		for (size_t i = 0; i < matrixSettings.GetBaseSettings().GetReadLimit(); ++i)
 		{
-			SkipCharacters(matrixSettings.GetSkipCharacters());
-			BasePush(possibleMatrix, std::vector<T>(), matrixSettings.GetReadMethod());
-			size_t activeContainerIndex = GetActiveContainerIndex(possibleMatrix, matrixSettings.GetReadMethod());
+			SkipCharacters(matrixSettings.GetBaseSettings().GetSkipCharacters());
+			BasePush(possibleMatrix, std::vector<T>(), matrixSettings.GetBaseSettings().GetReadMethod());
+			size_t activeContainerIndex = GetActiveContainerIndex(possibleMatrix, matrixSettings.GetBaseSettings().GetReadMethod());
 			if (!ReadVector(possibleMatrix[activeContainerIndex], vectorSettings))
 			{
 				if (possibleMatrix[activeContainerIndex].empty())
 				{
-					VectorPop(possibleMatrix, matrixSettings.GetReadMethod());
+					VectorPop(possibleMatrix, matrixSettings.GetBaseSettings().GetReadMethod());
 				}
 				enoughRows = false;
 				break;
@@ -145,9 +145,9 @@ public:
 			while (ReadEndOfLine()) {}
 		}
 		bool isPossibleMatrixEmpty = possibleMatrix.empty();
-		auto insertIterator = matrixSettings.GetReadMethod() == ReadVectorMethod::PUSH_BACK ? matrix.end() : matrix.begin();
+		auto insertIterator = matrixSettings.GetBaseSettings().GetReadMethod() == ReadVectorMethod::PUSH_BACK ? matrix.end() : matrix.begin();
 		matrix.insert(insertIterator, std::make_move_iterator(possibleMatrix.begin()), std::make_move_iterator(possibleMatrix.end()));
-		return !isPossibleMatrixEmpty && (enoughRows || matrixSettings.GetReadLimit() == ReadLimit::UNLIMITED);
+		return !isPossibleMatrixEmpty && (enoughRows || matrixSettings.GetBaseSettings().GetReadLimit() == ReadLimit::UNLIMITED);
 	}
 
 	bool Scan(
@@ -258,7 +258,7 @@ private:
 			}
 			elemToPush = settings.GetRules().at(elem);
 		}
-		BasePush(vect, elemToPush, settings.GetReadMethod());
+		BasePush(vect, elemToPush, settings.GetBaseSettings().GetReadMethod());
 		return true;
 	}
 
@@ -276,7 +276,7 @@ private:
 				return false;
 			}
 			TVectorElement elemToPush = settings.GetRules().at(elem);
-			BasePush(vect, elemToPush, settings.GetReadMethod());
+			BasePush(vect, elemToPush, settings.GetBaseSettings().GetReadMethod());
 			return true;
 		}
 		return false;
@@ -302,7 +302,7 @@ private:
 			}
 			elemToPush = settings.GetRules().at(elem);
 		}
-		BasePush(vect, elemToPush, settings.GetReadMethod());
+		BasePush(vect, elemToPush, settings.GetBaseSettings().GetReadMethod());
 		return true;
 	}
 
@@ -336,23 +336,23 @@ private:
 	{
 		std::vector<TVectorElement> possibleVect;
 		bool result = false;
-		std::unordered_set<char> const& stopCharacters = settings.GetStopCharacters();
+		std::unordered_set<char> const& stopCharacters = settings.GetBaseSettings().GetStopCharacters();
 		TReadElement elem;
-		SkipCharacters(settings.GetSkipCharacters());
-		while (possibleVect.size() != settings.GetReadLimit() && ReadArgumentFromStream(elem) && stopCharacters.find(elem) == stopCharacters.end())
+		SkipCharacters(settings.GetBaseSettings().GetSkipCharacters());
+		while (possibleVect.size() != settings.GetBaseSettings().GetReadLimit() && ReadArgumentFromStream(elem) && stopCharacters.find(elem) == stopCharacters.end())
 		{
 			if (!VectorPush(possibleVect, elem, settings))
 			{
 				result = false;
 				break;
 			}
-			SkipCharacters(settings.GetSkipCharacters());
+			SkipCharacters(settings.GetBaseSettings().GetSkipCharacters());
 			result = true;
 		}
 		size_t possibleVectSize = possibleVect.size();
-		auto insertIterator = settings.GetReadMethod() == ReadVectorMethod::PUSH_BACK ? vect.end() : vect.begin();
+		auto insertIterator = settings.GetBaseSettings().GetReadMethod() == ReadVectorMethod::PUSH_BACK ? vect.end() : vect.begin();
 		vect.insert(insertIterator, std::make_move_iterator(possibleVect.begin()), std::make_move_iterator(possibleVect.end()));
-		return result && (possibleVectSize == settings.GetReadLimit() || settings.GetReadLimit() == ReadLimit::UNLIMITED);
+		return result && (possibleVectSize == settings.GetBaseSettings().GetReadLimit() || settings.GetBaseSettings().GetReadLimit() == ReadLimit::UNLIMITED);
 	}
 
 	static const int ENDL_SYMBOL_CODE_LF = 10;

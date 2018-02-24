@@ -15,14 +15,9 @@ TEST(read_vector_with_true_char_function, returns_false_if_can_not_read_any_elem
 	EXPECT_FALSE(
 		input.ReadVector(
 			booleans,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				ReadLimit::UNLIMITED,
-				'#',
-				{}
-			}
+			VectorSettingsBuilder<bool>()
+				.SetTrueChar('#')
+				.Build()
 		)
 	);
 }
@@ -36,14 +31,7 @@ TEST(read_vector_with_true_char_function, push_back_by_default)
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				ReadLimit::UNLIMITED,
-				'#',
-				{}
-			}
+			VectorSettingsBuilder<bool>().SetTrueChar('#').Build()
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
@@ -58,14 +46,13 @@ TEST(read_vector_with_true_char_function, can_push_front)
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_FRONT,
-				ReadLimit::UNLIMITED,
-				'#',
-				{}
-			}
+			VectorSettingsBuilder<bool>()
+				.SetTrueChar('#')
+				.Build(
+					BaseSettingsBuilder()
+						.SetReadMethod(ReadVectorMethod::PUSH_FRONT)
+						.Build()
+				)
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
@@ -80,14 +67,7 @@ TEST(read_vector_with_true_char_function, skip_whitespaces_and_empty_lines)
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				ReadLimit::UNLIMITED,
-				'#',
-				{}
-			}
+			VectorSettingsBuilder<bool>().SetTrueChar('#').Build()
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
@@ -102,14 +82,13 @@ TEST(read_vector_with_true_char_function, can_have_skip_characters)
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
-			{
-				{' ', '\n'},
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				ReadLimit::UNLIMITED,
-				'#',
-				{}
-			}
+			VectorSettingsBuilder<bool>()
+				.SetTrueChar('#')
+				.Build(
+					BaseSettingsBuilder()
+						.SetSkipCharacters({ ' ', '\n' })
+						.Build()
+				)
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
@@ -124,15 +103,14 @@ TEST(read_vector_with_true_char_function, can_have_stop_characters)
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
-			{
-				{},
-				{'.'},
-				ReadVectorMethod::PUSH_BACK,
-				ReadLimit::UNLIMITED,
-				'#',
-				{}
-		}
-	)
+			VectorSettingsBuilder<bool>()
+				.SetTrueChar('#')
+				.Build(
+					BaseSettingsBuilder()
+						.SetStopCharacters({'.'})
+						.Build()
+				)
+		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
 }
@@ -146,14 +124,13 @@ TEST(read_vector_with_true_char_function, can_have_limit)
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				3,
-				'#',
-				{}
-			}
+			VectorSettingsBuilder<bool>()
+				.SetTrueChar('#')
+				.Build(
+					BaseSettingsBuilder()
+						.SetReadLimit(3)
+						.Build()
+				)
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);

@@ -8,25 +8,35 @@
 
 class BaseSettings
 {
+	friend class BaseSettingsBuilder;
 public:
-	BaseSettings()
-			: m_skipCharacters({})
-			, m_stopCharacters({})
-			, m_readMethod(ReadVectorMethod::PUSH_BACK)
-			, m_readLimit(ReadLimit::UNLIMITED)
-	{}
+	BaseSettings() = default;
 
-	BaseSettings(
-			std::unordered_set<char> skipCharacters,
-			std::unordered_set<char> stopCharacters,
-			ReadVectorMethod readMethod,
-			size_t readLimit
-	)
-			: m_skipCharacters(std::move(skipCharacters))
-			, m_stopCharacters(std::move(stopCharacters))
-			, m_readMethod(readMethod)
-			, m_readLimit(readLimit)
-	{}
+	BaseSettings & operator=(BaseSettings const& right) noexcept
+	{
+		if (this == &right)
+		{
+			return *this;
+		}
+		m_skipCharacters = right.m_skipCharacters;
+		m_stopCharacters = right.m_stopCharacters;
+		m_readMethod = right.m_readMethod;
+		m_readLimit = right.m_readLimit;
+		return *this;
+	}
+
+	BaseSettings & operator=(BaseSettings && right) noexcept
+	{
+		if (this == &right)
+		{
+			return *this;
+		}
+		m_skipCharacters = std::move(right.m_skipCharacters);
+		m_stopCharacters = std::move(right.m_stopCharacters);
+		m_readMethod = right.m_readMethod;
+		m_readLimit = right.m_readLimit;
+		return *this;
+	}
 
 	std::unordered_set<char> const& GetSkipCharacters() const
 	{
@@ -51,8 +61,46 @@ public:
 private:
 	std::unordered_set<char> m_skipCharacters;
 	std::unordered_set<char> m_stopCharacters;
-	ReadVectorMethod m_readMethod;
-	size_t m_readLimit;
+	ReadVectorMethod m_readMethod = ReadVectorMethod::PUSH_BACK;
+	size_t m_readLimit = ReadLimit::UNLIMITED;
+};
+
+class BaseSettingsBuilder
+{
+public:
+	BaseSettingsBuilder() = default;
+
+	BaseSettingsBuilder & SetSkipCharacters(std::unordered_set<char> skipCharacters)
+	{
+		m_baseSettings.m_skipCharacters = std::move(skipCharacters);
+		return *this;
+	}
+
+	BaseSettingsBuilder & SetStopCharacters(std::unordered_set<char> stopCharacters)
+	{
+		m_baseSettings.m_stopCharacters = std::move(stopCharacters);
+		return *this;
+	}
+
+	BaseSettingsBuilder & SetReadMethod(ReadVectorMethod readMethod)
+	{
+		m_baseSettings.m_readMethod = readMethod;
+		return *this;
+	}
+
+	BaseSettingsBuilder & SetReadLimit(size_t readLimit)
+	{
+		m_baseSettings.m_readLimit = readLimit;
+		return *this;
+	}
+
+	BaseSettings const& Build() const
+	{
+		return m_baseSettings;
+	}
+
+private:
+	BaseSettings m_baseSettings;
 };
 
 #endif //PROJECT_BASESETTINGS_H

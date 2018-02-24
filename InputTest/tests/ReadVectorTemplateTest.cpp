@@ -73,14 +73,12 @@ TEST(read_vector_template, can_push_front)
 	EXPECT_TRUE(
 		input.ReadVector(
 			numbers,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_FRONT,
-				ReadLimit::UNLIMITED,
-				NOT_A_CHARACTER,
-				unordered_map<char, int>()
-			}
+			VectorSettingsBuilder<int>()
+				.Build(
+					BaseSettingsBuilder()
+						.SetReadMethod(ReadVectorMethod::PUSH_FRONT)
+						.Build()
+				)
 		)
 	);
 	EXPECT_EQ(numbers, expectedVector);
@@ -95,14 +93,12 @@ TEST(read_vector_template, can_skip_empty_lines)
 	EXPECT_TRUE(
 		input.ReadVector(
 			numbers,
-			{
-				{'\n'},
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				ReadLimit::UNLIMITED,
-				NOT_A_CHARACTER,
-				unordered_map<char, int>()
-			}
+			VectorSettingsBuilder<int>()
+				.Build(
+					BaseSettingsBuilder()
+						.SetSkipCharacters({'\n'})
+						.Build()
+				)
 		)
 	);
 	EXPECT_EQ(numbers, expectedVector);
@@ -117,14 +113,12 @@ TEST(read_vector_template, can_have_limit)
 	EXPECT_TRUE(
 		input.ReadVector(
 			numbers,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				3,
-				NOT_A_CHARACTER,
-				{}
-			}
+			VectorSettingsBuilder<int>()
+					.Build(
+							BaseSettingsBuilder()
+									.SetReadLimit(3)
+									.Build()
+					)
 		)
 	);
 	EXPECT_EQ(numbers, expectedVector);
@@ -135,20 +129,7 @@ TEST(read_vector_template, throws_exception_if_rules_and_true_char_are_not_speci
 	stringstream is("0 1 2 3");
 	Input input(is);
 	vector<bool> numbers;
-	EXPECT_THROW(
-		input.ReadVector(
-			numbers,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				ReadLimit::UNLIMITED,
-				NOT_A_CHARACTER,
-				{}
-			}
-		),
-		invalid_argument
-	);
+	EXPECT_THROW(input.ReadVector(numbers), invalid_argument);
 }
 
 TEST(read_vector_template, reads_until_end_of_line_lf)

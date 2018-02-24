@@ -92,7 +92,17 @@ TEST(read_matrix_template, can_push_front)
 		stringstream is("0 1 2 3\n4 5 6 7");
 		Input input(is);
 		vector<vector<int>> numbers;
-		EXPECT_TRUE(input.ReadMatrix(numbers, {{}, {}, ReadVectorMethod::PUSH_FRONT, ReadLimit::UNLIMITED}));
+		EXPECT_TRUE(
+			input.ReadMatrix(
+				numbers,
+				MatrixSettingsBuilder()
+					.Build(
+						BaseSettingsBuilder()
+							.SetReadMethod(ReadVectorMethod::PUSH_FRONT)
+							.Build()
+					)
+			)
+		);
 		EXPECT_EQ(numbers, expectedMatrix);
 	}
 	{
@@ -100,7 +110,17 @@ TEST(read_matrix_template, can_push_front)
 		stringstream is("0 1 2 3\n4 5 6 7");
 		Input input(is);
 		vector<vector<int>> numbers = {{1}};
-		EXPECT_TRUE(input.ReadMatrix(numbers, {{}, {}, ReadVectorMethod::PUSH_FRONT, ReadLimit::UNLIMITED}));
+		EXPECT_TRUE(
+			input.ReadMatrix(
+				numbers,
+				MatrixSettingsBuilder()
+					.Build(
+						BaseSettingsBuilder()
+							.SetReadMethod(ReadVectorMethod::PUSH_FRONT)
+							.Build()
+					)
+			)
+		);
 		EXPECT_EQ(numbers, expectedMatrix);
 	}
 }
@@ -151,7 +171,17 @@ TEST(read_matrix_template, can_have_limit)
 	stringstream is("0 1 2 3\n4 5 6 7\n8 9 10 11");
 	Input input(is);
 	vector<vector<int>> matrix;
-	EXPECT_TRUE(input.ReadMatrix(matrix, {{}, {}, ReadVectorMethod::PUSH_BACK, 2}));
+	EXPECT_TRUE(
+		input.ReadMatrix(
+			matrix,
+			MatrixSettingsBuilder()
+				.Build(
+					BaseSettingsBuilder()
+						.SetReadLimit(2)
+						.Build()
+				)
+		)
+	);
 	EXPECT_EQ(matrix, expectedMatrix);
 }
 
@@ -161,6 +191,16 @@ TEST(read_matrix_template, can_have_stop_characters)
 	stringstream is("0 1 2 3\n\n4 5 6 7\n\n\n # 8 9 10 11");
 	Input input(is);
 	vector<vector<int>> matrix;
-	EXPECT_TRUE(input.ReadMatrix(matrix, {{}, {'#'}, ReadVectorMethod::PUSH_BACK, ReadLimit::UNLIMITED}));
+	EXPECT_TRUE(
+		input.ReadMatrix(
+			matrix,
+			MatrixSettingsBuilder()
+				.Build(
+					BaseSettingsBuilder()
+						.SetStopCharacters({'#'})
+						.Build()
+				)
+		)
+	);
 	EXPECT_EQ(matrix, expectedMatrix);
 }

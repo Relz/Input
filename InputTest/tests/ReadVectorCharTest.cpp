@@ -35,14 +35,12 @@ TEST(read_vector_char, can_push_front)
 	EXPECT_TRUE(
 		input.ReadVector(
 			chars,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_FRONT,
-				ReadLimit::UNLIMITED,
-				NOT_A_CHARACTER,
-				{}
-			}
+			VectorSettingsBuilder<char>()
+				.Build(
+					BaseSettingsBuilder()
+						.SetReadMethod(ReadVectorMethod::PUSH_FRONT)
+						.Build()
+				)
 		)
 	);
 	EXPECT_EQ(chars, expectedVector);
@@ -67,14 +65,11 @@ TEST(read_vector_char, skips_characters_before_reading_first_element)
 	EXPECT_TRUE(
 		input.ReadVector(
 			chars,
-			{
-				{ ' ', '\n' },
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				ReadLimit::UNLIMITED,
-				NOT_A_CHARACTER,
-				{}
-			}
+				VectorSettingsBuilder<char>()
+					.Build(
+						BaseSettingsBuilder()
+							.SetSkipCharacters({' ', '\n'}).Build()
+					)
 		)
 	);
 	EXPECT_EQ(chars, expectedVector);
@@ -89,14 +84,12 @@ TEST(read_vector_char, can_skip_whitespaces_and_empty_lines)
 	EXPECT_TRUE(
 		input.ReadVector(
 			chars,
-			{
-				{ ' ', '\n' },
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				ReadLimit::UNLIMITED,
-				NOT_A_CHARACTER,
-				{}
-			}
+			VectorSettingsBuilder<char>()
+				.Build(
+					BaseSettingsBuilder()
+						.SetSkipCharacters({ ' ', '\n' })
+						.Build()
+				)
 		)
 	);
 	EXPECT_EQ(chars, expectedVector);
@@ -111,14 +104,12 @@ TEST(read_vector_char, can_have_limit)
 	EXPECT_TRUE(
 		input.ReadVector(
 			chars,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				3,
-				NOT_A_CHARACTER,
-				{}
-			}
+			VectorSettingsBuilder<char>()
+				.Build(
+					BaseSettingsBuilder()
+						.SetReadLimit(3)
+						.Build()
+				)
 		)
 	);
 	EXPECT_EQ(chars, expectedVector);

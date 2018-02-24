@@ -5,27 +5,19 @@
 #include "BaseSettings.h"
 #include "Constant.h"
 
-template <typename T>
-class VectorSettings: public BaseSettings
-{
-public:
-	VectorSettings()
-			: m_trueChar(NOT_A_CHARACTER)
-			, m_rules(std::unordered_map<char, T>())
-	{}
+template <typename T> class VectorSettingsBuilder;
 
-	VectorSettings(
-			const std::unordered_set<char> & skipCharacters,
-			const std::unordered_set<char> & stopCharacters,
-			ReadVectorMethod readVectorMethod,
-			size_t readLimit,
-			char trueChar,
-			const std::unordered_map<char, T> & rules
-	)
-			: BaseSettings(skipCharacters, stopCharacters, readVectorMethod, readLimit)
-			, m_trueChar(trueChar)
-			, m_rules(rules)
-	{}
+template <typename T>
+class VectorSettings
+{
+	friend class VectorSettingsBuilder<T>;
+public:
+	VectorSettings() = default;
+
+	BaseSettings const& GetBaseSettings() const
+	{
+		return m_baseSettings;
+	}
 
 	char GetTrueChar() const
 	{
@@ -38,8 +30,37 @@ public:
 	}
 
 private:
-	char m_trueChar;
+	BaseSettings m_baseSettings;
+	char m_trueChar = NOT_A_CHARACTER;
 	std::unordered_map<char, T> m_rules;
+};
+
+template<typename T = char>
+class VectorSettingsBuilder
+{
+public:
+	VectorSettingsBuilder() = default;
+
+	VectorSettingsBuilder & SetTrueChar(char trueChar)
+	{
+		m_vectorSettings.m_trueChar = trueChar;
+		return *this;
+	}
+
+	VectorSettingsBuilder & SetRules(std::unordered_map<char, T> rules)
+	{
+		m_vectorSettings.m_rules = std::move(rules);
+		return *this;
+	}
+
+	VectorSettings<T> const& Build(BaseSettings const& baseSettings = BaseSettings())
+	{
+		m_vectorSettings.m_baseSettings = baseSettings;
+		return m_vectorSettings;
+	}
+
+private:
+	VectorSettings<T> m_vectorSettings;
 };
 
 #endif //PROJECT_VECTORSETTINGS_H

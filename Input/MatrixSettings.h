@@ -5,19 +5,33 @@
 #include "ReadLimit.h"
 #include "BaseSettings.h"
 
-class MatrixSettings: public BaseSettings
+class MatrixSettings
 {
+	friend class MatrixSettingsBuilder;
 public:
 	MatrixSettings() = default;
 
-	MatrixSettings(
-			const std::unordered_set<char> & skipCharacters,
-			const std::unordered_set<char> & stopCharacters,
-			ReadVectorMethod readVectorMethod,
-			size_t readLimit
-	)
-			: BaseSettings(skipCharacters, stopCharacters, readVectorMethod, readLimit)
-	{}
+	BaseSettings const& GetBaseSettings() const
+	{
+		return m_baseSettings;
+	}
+private:
+	BaseSettings m_baseSettings;
+};
+
+class MatrixSettingsBuilder
+{
+public:
+	MatrixSettingsBuilder() = default;
+
+	MatrixSettings const& Build(BaseSettings const& baseSettings = BaseSettings())
+	{
+		m_matrixSettings.m_baseSettings = baseSettings;
+		return m_matrixSettings;
+	}
+
+private:
+	MatrixSettings m_matrixSettings;
 };
 
 #endif //PROJECT_MATRIXSETTINGS_H

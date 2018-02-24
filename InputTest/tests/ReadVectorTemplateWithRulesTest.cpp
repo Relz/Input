@@ -29,14 +29,9 @@ TEST(read_vector_template_with_rules, returns_false_if_can_not_read_any_element)
 	EXPECT_FALSE(
 		input.ReadVector(
 			booleans,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				ReadLimit::UNLIMITED,
-				NOT_A_CHARACTER,
-				RULES_BOOLEANS
-			}
+			VectorSettingsBuilder<bool>()
+				.SetRules(RULES_BOOLEANS)
+				.Build()
 		)
 	);
 }
@@ -51,14 +46,7 @@ TEST(read_vector_template_with_rules, returns_false_if_can_not_convert_any_eleme
 		EXPECT_FALSE(
 			input.ReadVector(
 				booleans,
-				{
-					{},
-					{},
-					ReadVectorMethod::PUSH_BACK,
-					ReadLimit::UNLIMITED,
-					NOT_A_CHARACTER,
-					RULES_BOOLEANS
-				}
+				VectorSettingsBuilder<bool>().SetRules(RULES_BOOLEANS).Build()
 			)
 		);
 		EXPECT_TRUE(booleans.empty());
@@ -71,14 +59,7 @@ TEST(read_vector_template_with_rules, returns_false_if_can_not_convert_any_eleme
 		EXPECT_FALSE(
 			input.ReadVector<char>(
 				numbers,
-				{
-					{},
-					{},
-					ReadVectorMethod::PUSH_BACK,
-					ReadLimit::UNLIMITED,
-					NOT_A_CHARACTER,
-					RULES_NUMBERS
-				}
+				VectorSettingsBuilder<size_t>().SetRules(RULES_NUMBERS).Build()
 			)
 		);
 		EXPECT_EQ(numbers, expectedVector);
@@ -91,14 +72,7 @@ TEST(read_vector_template_with_rules, returns_false_if_can_not_convert_any_eleme
 		EXPECT_FALSE(
 			input.ReadVector(
 				characters,
-				{
-					{},
-					{},
-					ReadVectorMethod::PUSH_BACK,
-					ReadLimit::UNLIMITED,
-					NOT_A_CHARACTER,
-					RULES_CHARACTERS
-				}
+				VectorSettingsBuilder<char>().SetRules(RULES_CHARACTERS).Build()
 			)
 		);
 		EXPECT_EQ(characters, expectedVector);
@@ -114,14 +88,7 @@ TEST(read_vector_template_with_rules, reads_until_unexpected_type_element)
 	EXPECT_FALSE(
 		input.ReadVector(
 			booleans,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				ReadLimit::UNLIMITED,
-				NOT_A_CHARACTER,
-				RULES_BOOLEANS
-			}
+			VectorSettingsBuilder<bool>().SetRules(RULES_BOOLEANS).Build()
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
@@ -136,14 +103,7 @@ TEST(read_vector_template_with_rules, push_back_by_default)
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				ReadLimit::UNLIMITED,
-				NOT_A_CHARACTER,
-				RULES_BOOLEANS
-			}
+			VectorSettingsBuilder<bool>().SetRules(RULES_BOOLEANS).Build()
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
@@ -158,14 +118,13 @@ TEST(read_vector_template_with_rules, can_push_front)
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_FRONT,
-				ReadLimit::UNLIMITED,
-				NOT_A_CHARACTER,
-				RULES_BOOLEANS
-			}
+			VectorSettingsBuilder<bool>()
+				.SetRules(RULES_BOOLEANS)
+				.Build(
+					BaseSettingsBuilder()
+						.SetReadMethod(ReadVectorMethod::PUSH_FRONT)
+						.Build()
+				)
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
@@ -179,14 +138,7 @@ TEST(read_vector_template_with_rules, do_not_skip_whitespaces_and_empty_lines_by
 	EXPECT_FALSE(
 		input.ReadVector(
 			booleans,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				ReadLimit::UNLIMITED,
-				NOT_A_CHARACTER,
-				RULES_BOOLEANS
-			}
+			VectorSettingsBuilder<bool>().SetRules(RULES_BOOLEANS).Build()
 		)
 	);
 }
@@ -200,14 +152,13 @@ TEST(read_vector_template_with_rules, skips_before_first_reading)
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
-			{
-				{ ' ', '\n' },
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				ReadLimit::UNLIMITED,
-				NOT_A_CHARACTER,
-				RULES_BOOLEANS
-			}
+				VectorSettingsBuilder<bool>()
+					.SetRules(RULES_BOOLEANS)
+					.Build(
+						BaseSettingsBuilder()
+							.SetSkipCharacters({' ', '\n'})
+							.Build()
+					)
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
@@ -222,14 +173,13 @@ TEST(read_vector_template_with_rules, can_skip_whitespaces_and_empty_lines)
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
-			{
-				{ ' ', '\n' },
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				ReadLimit::UNLIMITED,
-				NOT_A_CHARACTER,
-				RULES_BOOLEANS
-			}
+			VectorSettingsBuilder<bool>()
+				.SetRules(RULES_BOOLEANS)
+				.Build(
+					BaseSettingsBuilder()
+						.SetSkipCharacters({' ', '\n'})
+						.Build()
+				)
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
@@ -244,14 +194,13 @@ TEST(read_vector_template_with_rules, can_have_limit)
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
-			{
-				{},
-				{},
-				ReadVectorMethod::PUSH_BACK,
-				4,
-				NOT_A_CHARACTER,
-				RULES_BOOLEANS
-			}
+			VectorSettingsBuilder<bool>()
+				.SetRules(RULES_BOOLEANS)
+				.Build(
+					BaseSettingsBuilder()
+						.SetReadLimit(4)
+						.Build()
+				)
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
