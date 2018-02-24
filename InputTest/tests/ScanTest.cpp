@@ -9,43 +9,37 @@ TEST(scan, returns_false_if_end_of_stream_scanned_otherwise_string_and_delimiter
 	istringstream is("class User");
 	Input input(is);
 	{
-		string scannedString;
-		StreamPosition scannedStringPosition;
-		string delimiter;
-		StreamPosition delimiterPosition;
-		EXPECT_TRUE(input.Scan({" "}, scannedString, scannedStringPosition, delimiter, delimiterPosition));
-		EXPECT_EQ(scannedString, "class");
-		EXPECT_EQ(delimiter, " ");
-		EXPECT_EQ(scannedStringPosition.GetLine(), 1);
-		EXPECT_EQ(scannedStringPosition.GetColumn(), 1);
-		EXPECT_EQ(delimiterPosition.GetLine(), 1);
-		EXPECT_EQ(delimiterPosition.GetColumn(), 6);
+		StreamString scannedStreamString;
+		StreamString delimiterStreamString;
+		EXPECT_TRUE(input.Scan({" "}, scannedStreamString, delimiterStreamString));
+		EXPECT_EQ(scannedStreamString.string, "class");
+		EXPECT_EQ(delimiterStreamString.string, " ");
+		EXPECT_EQ(scannedStreamString.position.GetLine(), 1);
+		EXPECT_EQ(scannedStreamString.position.GetColumn(), 1);
+		EXPECT_EQ(delimiterStreamString.position.GetLine(), 1);
+		EXPECT_EQ(delimiterStreamString.position.GetColumn(), 6);
 	}
 	{
-		string scannedString;
-		StreamPosition scannedStringPosition;
-		string delimiter;
-		StreamPosition delimiterPosition;
-		EXPECT_TRUE(input.Scan({" "}, scannedString, scannedStringPosition, delimiter, delimiterPosition));
-		EXPECT_EQ(scannedString, "User");
-		EXPECT_EQ(delimiter, "");
-		EXPECT_EQ(scannedStringPosition.GetLine(), 1);
-		EXPECT_EQ(scannedStringPosition.GetColumn(), 7);
-		EXPECT_EQ(delimiterPosition.GetLine(), 1);
-		EXPECT_EQ(delimiterPosition.GetColumn(), 1);
+		StreamString scannedStreamString;
+		StreamString delimiterStreamString;
+		EXPECT_TRUE(input.Scan({" "}, scannedStreamString, delimiterStreamString));
+		EXPECT_EQ(scannedStreamString.string, "User");
+		EXPECT_EQ(delimiterStreamString.string, "");
+		EXPECT_EQ(scannedStreamString.position.GetLine(), 1);
+		EXPECT_EQ(scannedStreamString.position.GetColumn(), 7);
+		EXPECT_EQ(delimiterStreamString.position.GetLine(), 1);
+		EXPECT_EQ(delimiterStreamString.position.GetColumn(), 1);
 	}
 	{
-		string scannedString;
-		StreamPosition scannedStringPosition;
-		string delimiter;
-		StreamPosition delimiterPosition;
-		EXPECT_FALSE(input.Scan({" "}, scannedString, scannedStringPosition, delimiter, delimiterPosition));
-		EXPECT_EQ(scannedString, "");
-		EXPECT_EQ(delimiter, "");
-		EXPECT_EQ(scannedStringPosition.GetLine(), 1);
-		EXPECT_EQ(scannedStringPosition.GetColumn(), 1);
-		EXPECT_EQ(delimiterPosition.GetLine(), 1);
-		EXPECT_EQ(delimiterPosition.GetColumn(), 1);
+		StreamString scannedStreamString;
+		StreamString delimiterStreamString;
+		EXPECT_FALSE(input.Scan({" "}, scannedStreamString, delimiterStreamString));
+		EXPECT_EQ(scannedStreamString.string, "");
+		EXPECT_EQ(delimiterStreamString.string, "");
+		EXPECT_EQ(scannedStreamString.position.GetLine(), 1);
+		EXPECT_EQ(scannedStreamString.position.GetColumn(), 1);
+		EXPECT_EQ(delimiterStreamString.position.GetLine(), 1);
+		EXPECT_EQ(delimiterStreamString.position.GetColumn(), 1);
 	}
 }
 
@@ -57,15 +51,13 @@ TEST(scan, can_work_with_multiple_lines_and_delimiters)
 	Input input(is);
 	vector<string> scannedStrings;
 	vector<string> scannedDelimiters;
-	string scannedString;
-	StreamPosition scannedStringPosition;
-	string delimiter;
-	StreamPosition delimiterPosition;
+	StreamString scannedStreamString;
+	StreamString delimiterStreamString;
 	vector<string> delimiters {" ", "(", ")", "{", "}", ";", "\t", "\n"};
-	while (input.Scan(delimiters, scannedString, scannedStringPosition, delimiter, delimiterPosition))
+	while (input.Scan(delimiters, scannedStreamString, delimiterStreamString))
 	{
-		scannedStrings.push_back(scannedString);
-		scannedDelimiters.push_back(delimiter);
+		scannedStrings.push_back(scannedStreamString.string);
+		scannedDelimiters.push_back(delimiterStreamString.string);
 	}
 	EXPECT_EQ(scannedStrings, expectedScannedStrings);
 	EXPECT_EQ(scannedDelimiters, expectedScannedDelimiters);
@@ -79,15 +71,13 @@ TEST(scan, can_work_with_big_delimiter)
 	Input input(is);
 	vector<string> scannedStrings;
 	vector<string> scannedDelimiters;
-	string scannedString;
-	StreamPosition scannedStringPosition;
-	string delimiter;
-	StreamPosition delimiterPosition;
-	while (input.Scan({" ", "-->"}, scannedString, scannedStringPosition, delimiter, delimiterPosition))
+	StreamString scannedStreamString;
+	StreamString delimiterStreamString;
+	while (input.Scan({" ", "-->"}, scannedStreamString, delimiterStreamString))
 	{
-		scannedStrings.push_back(scannedString);
-		scannedDelimiters.push_back(delimiter);
-		delimiter.clear();
+		scannedStrings.push_back(scannedStreamString.string);
+		scannedDelimiters.push_back(delimiterStreamString.string);
+		delimiterStreamString.string.clear();
 	}
 	EXPECT_EQ(scannedStrings, expectedScannedStrings);
 	EXPECT_EQ(scannedDelimiters, expectedScannedDelimiters);

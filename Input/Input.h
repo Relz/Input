@@ -1,9 +1,9 @@
-﻿#include "../StreamPosition/StreamPosition.h"
-#include "BaseSettings.h"
+﻿#include "BaseSettings.h"
 #include "MatrixSettings.h"
 #include "ReadLimit.h"
 #include "ReadVectorMethod.h"
 #include "VectorSettings.h"
+#include "StreamString.h"
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -152,35 +152,29 @@ public:
 
 	bool Scan(
 		std::vector<std::string> const& delimiters,
-		std::string & scannedString,
-		StreamPosition & scannedStringPosition,
-		std::string & delimiter,
-		StreamPosition & delimiterPosition
+		StreamString & scannedStreamString,
+		StreamString & delimiterStreamString
 	)
 	{
-		std::string possibleScannedString;
-		StreamPosition possibleScannedStringPosition = m_position;
-		std::string possibleDelimiter;
-		StreamPosition possibleDelimiterPosition;
+		StreamString possibleScannedStreamString("", m_position);
+		StreamString possibleDelimiterStreamString;
 		while (!IsEndOfStream())
 		{
-			if (FindDelimiter(delimiters, possibleDelimiter))
+			if (FindDelimiter(delimiters, possibleDelimiterStreamString.string))
 			{
-				possibleDelimiterPosition = m_position;
-				SkipArguments<char>(possibleDelimiter.length());
+				possibleDelimiterStreamString.position = m_position;
+				SkipArguments<char>(possibleDelimiterStreamString.string.length());
 				break;
 			}
 			else
 			{
-				ReadCharToString(possibleScannedString, true);
+				ReadCharToString(possibleScannedStreamString.string, true);
 			}
 		}
-		if (!possibleScannedString.empty() || !possibleDelimiter.empty())
+		if (!possibleScannedStreamString.string.empty() || !possibleDelimiterStreamString.string.empty())
 		{
-			scannedString = std::move(possibleScannedString);
-			scannedStringPosition = possibleScannedStringPosition;
-			delimiter = std::move(possibleDelimiter);
-			delimiterPosition = possibleDelimiterPosition;
+			scannedStreamString = possibleScannedStreamString;
+			delimiterStreamString = possibleDelimiterStreamString;
 			return true;
 		}
 		return false;
@@ -355,8 +349,8 @@ private:
 		return result && (possibleVectSize == settings.GetBaseSettings().GetReadLimit() || settings.GetBaseSettings().GetReadLimit() == ReadLimit::UNLIMITED);
 	}
 
-	static const int ENDL_SYMBOL_CODE_LF = 10;
-	static const int ENDL_SYMBOL_CODE_CR = 13;
+	static int const ENDL_SYMBOL_CODE_LF = 10;
+	static int const ENDL_SYMBOL_CODE_CR = 13;
 
 	bool IsEndOfLine()
 	{
