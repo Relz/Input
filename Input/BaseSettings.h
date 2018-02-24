@@ -1,7 +1,8 @@
 #ifndef PROJECT_BASESETTINGS_H
 #define PROJECT_BASESETTINGS_H
 
-#include <vector>
+#include <utility>
+#include <unordered_set>
 #include "ReadVectorMethod.h"
 #include "ReadLimit.h"
 
@@ -9,24 +10,32 @@ class BaseSettings
 {
 public:
 	BaseSettings()
-			: m_skipSymbols({})
+			: m_skipCharacters({})
+			, m_stopCharacters({})
 			, m_readMethod(ReadVectorMethod::PUSH_BACK)
 			, m_readLimit(ReadLimit::UNLIMITED)
 	{}
 
 	BaseSettings(
-			const std::vector<char> & skipSymbols,
+			std::unordered_set<char> skipCharacters,
+			std::unordered_set<char> stopCharacters,
 			ReadVectorMethod readMethod,
 			size_t readLimit
 	)
-			: m_skipSymbols(skipSymbols)
+			: m_skipCharacters(std::move(skipCharacters))
+			, m_stopCharacters(std::move(stopCharacters))
 			, m_readMethod(readMethod)
 			, m_readLimit(readLimit)
 	{}
 
-	std::vector<char> GetSkipSymbols() const
+	std::unordered_set<char> const& GetSkipCharacters() const
 	{
-		return m_skipSymbols;
+		return m_skipCharacters;
+	}
+
+	std::unordered_set<char> const& GetStopCharacters() const
+	{
+		return m_stopCharacters;
 	}
 
 	ReadVectorMethod GetReadMethod() const
@@ -40,7 +49,8 @@ public:
 	}
 
 private:
-	std::vector<char> m_skipSymbols;
+	std::unordered_set<char> m_skipCharacters;
+	std::unordered_set<char> m_stopCharacters;
 	ReadVectorMethod m_readMethod;
 	size_t m_readLimit;
 };

@@ -1,4 +1,4 @@
-#include "../../Input/Input.h"
+#include "Input.h"
 #include "gtest/gtest.h"
 #include <sstream>
 #include <string>
@@ -8,7 +8,7 @@ using namespace std;
 TEST(read_vector_with_true_char_function, returns_false_if_can_not_read_any_element)
 {
 	stringstream is("0");
-	CInput input(is);
+	Input input(is);
 	int arg0;
 	vector<bool> booleans;
 	input.ReadArguments(arg0);
@@ -16,11 +16,12 @@ TEST(read_vector_with_true_char_function, returns_false_if_can_not_read_any_elem
 		input.ReadVector(
 			booleans,
 			{
-				vector<char>(),
+				{},
+				{},
 				ReadVectorMethod::PUSH_BACK,
 				ReadLimit::UNLIMITED,
 				'#',
-				unordered_map<char, bool>()
+				{}
 			}
 		)
 	);
@@ -28,19 +29,20 @@ TEST(read_vector_with_true_char_function, returns_false_if_can_not_read_any_elem
 
 TEST(read_vector_with_true_char_function, push_back_by_default)
 {
-	vector<bool> expectedVector = { false, true, false, true, false, false, true };
+	vector<bool> expectedVector {false, true, false, true, false, false, true};
 	stringstream is(".#%#X@#");
-	CInput input(is);
+	Input input(is);
 	vector<bool> booleans;
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
 			{
-				vector<char>(),
+				{},
+				{},
 				ReadVectorMethod::PUSH_BACK,
 				ReadLimit::UNLIMITED,
 				'#',
-				unordered_map<char, bool>()
+				{}
 			}
 		)
 	);
@@ -49,82 +51,108 @@ TEST(read_vector_with_true_char_function, push_back_by_default)
 
 TEST(read_vector_with_true_char_function, can_push_front)
 {
-	vector<bool> expectedVector = { true, false, false, true, false, true, false };
+	vector<bool> expectedVector {true, false, false, true, false, true, false};
 	stringstream is(".#.#..#");
-	CInput input(is);
+	Input input(is);
 	vector<bool> booleans;
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
 			{
-				vector<char>(),
+				{},
+				{},
 				ReadVectorMethod::PUSH_FRONT,
 				ReadLimit::UNLIMITED,
 				'#',
-				unordered_map<char, bool>()
+				{}
 			}
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
 }
 
-TEST(read_vector_with_true_char_function, do_not_skip_whitespaces_and_empty_lines_by_default)
+TEST(read_vector_with_true_char_function, skip_whitespaces_and_empty_lines)
 {
-	vector<bool> expectedVector = { false, false, false, false };
+	vector<bool> expectedVector {false, false, false, false, false, false, false, false, false, false, false, true, false, true, false, false, true};
 	stringstream is("    \n\n\n   .#.#..#");
-	CInput input(is);
+	Input input(is);
 	vector<bool> booleans;
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
 			{
-				vector<char>(),
+				{},
+				{},
 				ReadVectorMethod::PUSH_BACK,
 				ReadLimit::UNLIMITED,
 				'#',
-				unordered_map<char, bool>()
+				{}
 			}
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
 }
 
-TEST(read_vector_with_true_char_function, can_skip_whitespaces_and_empty_lines_but_does_not_do_that_at_beginning)
+TEST(read_vector_with_true_char_function, can_have_skip_characters)
 {
-	vector<bool> expectedVector = { false, false, true, false, true, false, false, true };
+	vector<bool> expectedVector {false, true, false, true, false, false, true};
 	stringstream is("    \n\n\n   .#.#..#");
-	CInput input(is);
+	Input input(is);
 	vector<bool> booleans;
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
 			{
-				{ ' ', '\n' },
+				{' ', '\n'},
+				{},
 				ReadVectorMethod::PUSH_BACK,
 				ReadLimit::UNLIMITED,
 				'#',
-				unordered_map<char, bool>()
+				{}
 			}
 		)
+	);
+	EXPECT_EQ(booleans, expectedVector);
+}
+
+TEST(read_vector_with_true_char_function, can_have_stop_characters)
+{
+	vector<bool> expectedVector {false, false, false, false, false, false, false, false, false, false, true};
+	stringstream is("    \n\n\n   #.#..#");
+	Input input(is);
+	vector<bool> booleans;
+	EXPECT_TRUE(
+		input.ReadVector(
+			booleans,
+			{
+				{},
+				{'.'},
+				ReadVectorMethod::PUSH_BACK,
+				ReadLimit::UNLIMITED,
+				'#',
+				{}
+		}
+	)
 	);
 	EXPECT_EQ(booleans, expectedVector);
 }
 
 TEST(read_vector_with_true_char_function, can_have_limit)
 {
-	vector<bool> expectedVector = { false, true, false };
+	vector<bool> expectedVector {false, true, false};
 	stringstream is(".#.#..#");
-	CInput input(is);
+	Input input(is);
 	vector<bool> booleans;
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
 			{
-				vector<char>(),
+				{},
+				{},
 				ReadVectorMethod::PUSH_BACK,
 				3,
 				'#',
-				unordered_map<char, bool>()
+				{}
 			}
 		)
 	);

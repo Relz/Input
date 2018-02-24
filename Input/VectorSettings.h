@@ -15,13 +15,14 @@ public:
 	{}
 
 	VectorSettings(
-			const std::vector<char> & skipSymbols,
+			const std::unordered_set<char> & skipCharacters,
+			const std::unordered_set<char> & stopCharacters,
 			ReadVectorMethod readVectorMethod,
 			size_t readLimit,
 			char trueChar,
 			const std::unordered_map<char, T> & rules
 	)
-			: BaseSettings(skipSymbols, readVectorMethod, readLimit)
+			: BaseSettings(skipCharacters, stopCharacters, readVectorMethod, readLimit)
 			, m_trueChar(trueChar)
 			, m_rules(rules)
 	{}

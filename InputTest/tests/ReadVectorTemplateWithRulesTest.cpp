@@ -1,28 +1,28 @@
-#include "../../Input/Input.h"
+#include "Input.h"
 #include "gtest/gtest.h"
 #include <sstream>
 #include <string>
 
 using namespace std;
 
-unordered_map<char, bool> const RULES_BOOLS = { { '.', false }, { '#', true } };
+unordered_map<char, bool> const RULES_BOOLEANS = {{'.', false}, {'#', true}};
 
-unordered_map<char, size_t> const RULES_NUMBERS = {
-	{ '.', 0 },
-	{ '#', 1 },
-	{ '@', 2 },
+unordered_map<char, size_t> const RULES_NUMBERS {
+	{'.', 0},
+	{'#', 1},
+	{'@', 2},
 };
 
-unordered_map<char, char> const RULES_SYMBOLS = {
-	{ '.', 'A' },
-	{ '#', 'B' },
-	{ '@', 'C' },
+unordered_map<char, char> const RULES_CHARACTERS {
+	{'.', 'A'},
+	{'#', 'B'},
+	{'@', 'C'},
 };
 
-TEST(read_vector_template_with_rules_function, returns_false_if_can_not_read_any_element)
+TEST(read_vector_template_with_rules, returns_false_if_can_not_read_any_element)
 {
 	stringstream is("0");
-	CInput input(is);
+	Input input(is);
 	int arg0;
 	vector<bool> booleans;
 	input.ReadArguments(arg0);
@@ -30,45 +30,50 @@ TEST(read_vector_template_with_rules_function, returns_false_if_can_not_read_any
 		input.ReadVector(
 			booleans,
 			{
-				vector<char>(),
+				{},
+				{},
 				ReadVectorMethod::PUSH_BACK,
 				ReadLimit::UNLIMITED,
 				NOT_A_CHARACTER,
-				RULES_BOOLS
+				RULES_BOOLEANS
 			}
 		)
 	);
 }
 
-TEST(read_vector_template_with_rules_function, returns_false_if_can_not_convert_input_element)
+TEST(read_vector_template_with_rules, returns_false_if_can_not_convert_any_element)
 {
-	string wistreamStr = "@.#.&#..#";
+	string istreamStr = "@.#.&#..#";
 	{
-		stringstream is(wistreamStr);
-		CInput input(is);
+		stringstream is(istreamStr);
+		Input input(is);
 		vector<bool> booleans;
 		EXPECT_FALSE(
 			input.ReadVector(
 				booleans,
 				{
-					vector<char>(),
+					{},
+					{},
 					ReadVectorMethod::PUSH_BACK,
 					ReadLimit::UNLIMITED,
 					NOT_A_CHARACTER,
-					RULES_BOOLS
+					RULES_BOOLEANS
 				}
 			)
 		);
+		EXPECT_TRUE(booleans.empty());
 	}
 	{
-		stringstream is(wistreamStr);
-		CInput input(is);
+		vector<size_t> expectedVector {2, 0, 1, 0};
+		stringstream is(istreamStr);
+		Input input(is);
 		vector<size_t> numbers;
 		EXPECT_FALSE(
 			input.ReadVector<char>(
 				numbers,
 				{
-					vector<char>(),
+					{},
+					{},
 					ReadVectorMethod::PUSH_BACK,
 					ReadLimit::UNLIMITED,
 					NOT_A_CHARACTER,
@@ -76,165 +81,176 @@ TEST(read_vector_template_with_rules_function, returns_false_if_can_not_convert_
 				}
 			)
 		);
+		EXPECT_EQ(numbers, expectedVector);
 	}
 	{
-		stringstream is(wistreamStr);
-		CInput input(is);
-		vector<char> symbols;
+		vector<char> expectedVector { 'C', 'A', 'B', 'A' };
+		stringstream is(istreamStr);
+		Input input(is);
+		vector<char> characters;
 		EXPECT_FALSE(
 			input.ReadVector(
-				symbols,
+				characters,
 				{
-					vector<char>(),
+					{},
+					{},
 					ReadVectorMethod::PUSH_BACK,
 					ReadLimit::UNLIMITED,
 					NOT_A_CHARACTER,
-					RULES_SYMBOLS
+					RULES_CHARACTERS
 				}
 			)
 		);
+		EXPECT_EQ(characters, expectedVector);
 	}
 }
 
-TEST(read_vector_template_with_rules_function, reads_until_unexpected_type_element)
+TEST(read_vector_template_with_rules, reads_until_unexpected_type_element)
 {
-	vector<bool> expectedVector = { false, true, false, true, false, false, true };
+	vector<bool> expectedVector {false, true, false, true, false, false, true};
 	stringstream is(".#.#..#@");
-	CInput input(is);
+	Input input(is);
 	vector<bool> booleans;
 	EXPECT_FALSE(
 		input.ReadVector(
 			booleans,
 			{
-				vector<char>(),
+				{},
+				{},
 				ReadVectorMethod::PUSH_BACK,
 				ReadLimit::UNLIMITED,
 				NOT_A_CHARACTER,
-				RULES_BOOLS
+				RULES_BOOLEANS
 			}
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
 }
 
-TEST(read_vector_template_with_rules_function, push_back_by_default)
+TEST(read_vector_template_with_rules, push_back_by_default)
 {
-	vector<bool> expectedVector = { false, true, false, true, false, false, true };
+	vector<bool> expectedVector {false, true, false, true, false, false, true};
 	stringstream is(".#.#..#");
-	CInput input(is);
+	Input input(is);
 	vector<bool> booleans;
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
 			{
-				vector<char>(),
+				{},
+				{},
 				ReadVectorMethod::PUSH_BACK,
 				ReadLimit::UNLIMITED,
 				NOT_A_CHARACTER,
-				RULES_BOOLS
+				RULES_BOOLEANS
 			}
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
 }
 
-TEST(read_vector_template_with_rules_function, can_push_front)
+TEST(read_vector_template_with_rules, can_push_front)
 {
-	vector<bool> expectedVector = { true, false, false, true, false, true, false };
+	vector<bool> expectedVector {true, false, false, true, false, true, false};
 	stringstream is(".#.#..#");
-	CInput input(is);
+	Input input(is);
 	vector<bool> booleans;
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
 			{
-				vector<char>(),
+				{},
+				{},
 				ReadVectorMethod::PUSH_FRONT,
 				ReadLimit::UNLIMITED,
 				NOT_A_CHARACTER,
-				RULES_BOOLS
+				RULES_BOOLEANS
 			}
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
 }
 
-TEST(read_vector_template_with_rules_function, do_not_skip_whitespaces_and_empty_lines_by_default)
+TEST(read_vector_template_with_rules, do_not_skip_whitespaces_and_empty_lines_by_default)
 {
 	stringstream is("     \n\n\n             .#.#..#");
-	CInput input(is);
+	Input input(is);
 	vector<bool> booleans;
 	EXPECT_FALSE(
 		input.ReadVector(
 			booleans,
 			{
-				vector<char>(),
+				{},
+				{},
 				ReadVectorMethod::PUSH_BACK,
 				ReadLimit::UNLIMITED,
 				NOT_A_CHARACTER,
-				RULES_BOOLS
+				RULES_BOOLEANS
 			}
 		)
 	);
 }
 
-TEST(read_vector_template_with_rules_function, does_not_skip_before_first_allowed_value)
+TEST(read_vector_template_with_rules, skips_before_first_reading)
 {
-	vector<bool> expectedVector = {};
+	vector<bool> expectedVector {false, true, false, true, false, false, true};
 	stringstream is("     \n\n\n             .#.#..#");
-	CInput input(is);
+	Input input(is);
 	vector<bool> booleans;
-	EXPECT_FALSE(
+	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
 			{
 				{ ' ', '\n' },
+				{},
 				ReadVectorMethod::PUSH_BACK,
 				ReadLimit::UNLIMITED,
 				NOT_A_CHARACTER,
-				RULES_BOOLS
+				RULES_BOOLEANS
 			}
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
 }
 
-TEST(read_vector_template_with_rules_function, can_skip_whitespaces_and_empty_lines)
+TEST(read_vector_template_with_rules, can_skip_whitespaces_and_empty_lines)
 {
-	vector<bool> expectedVector = { false, true, false, true, false, false, true };
+	vector<bool> expectedVector {false, true, false, true, false, false, true};
 	stringstream is(". #     \n\n\n             .#..#");
-	CInput input(is);
+	Input input(is);
 	vector<bool> booleans;
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
 			{
 				{ ' ', '\n' },
+				{},
 				ReadVectorMethod::PUSH_BACK,
 				ReadLimit::UNLIMITED,
 				NOT_A_CHARACTER,
-				RULES_BOOLS
+				RULES_BOOLEANS
 			}
 		)
 	);
 	EXPECT_EQ(booleans, expectedVector);
 }
 
-TEST(read_vector_template_with_rules_function, can_have_limit)
+TEST(read_vector_template_with_rules, can_have_limit)
 {
-	vector<bool> expectedVector = { false, true, false, true };
+	vector<bool> expectedVector {false, true, false, true};
 	stringstream is(".#.#..#");
-	CInput input(is);
+	Input input(is);
 	vector<bool> booleans;
 	EXPECT_TRUE(
 		input.ReadVector(
 			booleans,
 			{
-				vector<char>(),
+				{},
+				{},
 				ReadVectorMethod::PUSH_BACK,
 				4,
 				NOT_A_CHARACTER,
-				RULES_BOOLS
+				RULES_BOOLEANS
 			}
 		)
 	);

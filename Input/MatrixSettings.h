@@ -5,18 +5,18 @@
 #include "ReadLimit.h"
 #include "BaseSettings.h"
 
-
 class MatrixSettings: public BaseSettings
 {
 public:
 	MatrixSettings() = default;
 
 	MatrixSettings(
-			const std::vector<char> & skipSymbols,
+			const std::unordered_set<char> & skipCharacters,
+			const std::unordered_set<char> & stopCharacters,
 			ReadVectorMethod readVectorMethod,
 			size_t readLimit
 	)
-			: BaseSettings(skipSymbols, readVectorMethod, readLimit)
+			: BaseSettings(skipCharacters, stopCharacters, readVectorMethod, readLimit)
 	{}
 };
 

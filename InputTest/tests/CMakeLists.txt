@@ -6,18 +6,18 @@ SET(SOURCE_FILES
 		SkipArgumentsTest.cpp
 		SkipLineTest.cpp
 		SkipLinesTest.cpp
-		SkipSymbolsTest.cpp
+		SkipCharactersTest.cpp
 		SkipUntilCharactersTest.cpp
 		ReadArgumentsTest.cpp
 		ReadVectorTemplateTest.cpp
 		ReadVectorTemplateWithRulesTest.cpp
-		ReadVectorWCharTest.cpp
+		ReadVectorCharTest.cpp
 		ReadVectorWithTrueCharTest.cpp
 		ReadMatrixTemplateTest.cpp
 		ScanTest.cpp
-		SkipUntilStringsTest.cpp GetFileNameTest.cpp)
+		SkipUntilStringsTest.cpp
+		GetFileNameTest.cpp)
 
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/Input)
 ADD_EXECUTABLE(InputTest ${SOURCE_FILES})
-
-TARGET_LINK_LIBRARIES(InputTest gtest gtest_main)
-TARGET_LINK_LIBRARIES(InputTest Input)
+TARGET_LINK_LIBRARIES(InputTest gtest gtest_main Input)
