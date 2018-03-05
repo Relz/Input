@@ -1,20 +1,22 @@
 #ifndef PROJECT_VECTORSETTINGS_H
 #define PROJECT_VECTORSETTINGS_H
 
-#include <unordered_map>
 #include "BaseSettings.h"
 #include "Constant.h"
+#include <unordered_map>
 
-template <typename T> class VectorSettingsBuilder;
+template<typename T>
+class VectorSettingsBuilder;
 
-template <typename T>
+template<typename T>
 class VectorSettings
 {
 	friend class VectorSettingsBuilder<T>;
+
 public:
 	VectorSettings() = default;
 
-	BaseSettings const& GetBaseSettings() const
+	BaseSettings const & GetBaseSettings() const
 	{
 		return m_baseSettings;
 	}
@@ -53,7 +55,7 @@ public:
 		return *this;
 	}
 
-	VectorSettings<T> const& Build(BaseSettings const& baseSettings = BaseSettings())
+	VectorSettings<T> const & Build(BaseSettings const & baseSettings = BaseSettings())
 	{
 		m_vectorSettings.m_baseSettings = baseSettings;
 		return m_vectorSettings;

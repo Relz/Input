@@ -7,30 +7,60 @@ public:
 		SafeSetColumn(column);
 	}
 
-	long GetLine() const { return m_line; }
+	long GetLine() const
+	{
+		return m_line;
+	}
 
-	void SetLine(long value) { SafeSetLine(value); }
+	void SetLine(long value)
+	{
+		SafeSetLine(value);
+	}
 
-	long GetColumn() const { return m_column; }
+	long GetColumn() const
+	{
+		return m_column;
+	}
 
-	void SetColumn(long value) { SafeSetColumn(value); }
+	void SetColumn(long value)
+	{
+		SafeSetColumn(value);
+	}
 
-	void IncreaseLine(long value = 1) { SafeSetLine(m_line + value); }
+	void IncreaseLine(long value = 1)
+	{
+		SafeSetLine(m_line + value);
+	}
 
-	void IncreaseColumn(long value = 1) { SafeSetColumn(m_column + value); }
+	void IncreaseColumn(long value = 1)
+	{
+		SafeSetColumn(m_column + value);
+	}
 
-	void DecreaseLine(long value = 1) { SafeSetLine(m_line - value); }
+	void DecreaseLine(long value = 1)
+	{
+		SafeSetLine(m_line - value);
+	}
 
-	void DecreaseColumn(long value = 1) { SafeSetColumn(m_column - value); }
+	void DecreaseColumn(long value = 1)
+	{
+		SafeSetColumn(m_column - value);
+	}
 
-	void ResetColumn() { m_column = MIN_COLUMN; }
+	void ResetColumn()
+	{
+		m_column = MIN_COLUMN;
+	}
 
-	bool operator==(const StreamPosition& other) const
+	bool operator==(const StreamPosition & other) const
 	{
 		return GetLine() == other.GetLine() && GetColumn() == other.GetColumn();
 	}
 
-	bool operator!=(const StreamPosition& other) const { return !(*this == other); }
+	bool operator!=(const StreamPosition & other) const
+	{
+		return !(*this == other);
+	}
 
 private:
 	static const long MIN_LINE = 1;
@@ -39,7 +69,13 @@ private:
 	long m_line;
 	long m_column;
 
-	void SafeSetLine(long value) { m_line = value >= MIN_LINE ? value : MIN_LINE; }
+	void SafeSetLine(long value)
+	{
+		m_line = value >= MIN_LINE ? value : MIN_LINE;
+	}
 
-	void SafeSetColumn(long value) { m_column = value >= MIN_COLUMN ? value : MIN_COLUMN; }
+	void SafeSetColumn(long value)
+	{
+		m_column = value >= MIN_COLUMN ? value : MIN_COLUMN;
+	}
 };

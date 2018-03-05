@@ -1,18 +1,18 @@
 #ifndef PROJECT_BASESETTINGS_H
 #define PROJECT_BASESETTINGS_H
 
-#include <utility>
-#include <unordered_set>
 #include "ReadVectorMethod.h"
-#include "ReadLimit.h"
+#include <unordered_set>
+#include <utility>
 
 class BaseSettings
 {
 	friend class BaseSettingsBuilder;
+
 public:
 	BaseSettings() = default;
 
-	BaseSettings & operator=(BaseSettings const& right) noexcept
+	BaseSettings & operator=(BaseSettings const & right) noexcept
 	{
 		if (this == &right)
 		{
@@ -38,12 +38,12 @@ public:
 		return *this;
 	}
 
-	std::unordered_set<char> const& GetSkipCharacters() const
+	std::unordered_set<char> const & GetSkipCharacters() const
 	{
 		return m_skipCharacters;
 	}
 
-	std::unordered_set<char> const& GetStopCharacters() const
+	std::unordered_set<char> const & GetStopCharacters() const
 	{
 		return m_stopCharacters;
 	}
@@ -62,7 +62,7 @@ private:
 	std::unordered_set<char> m_skipCharacters;
 	std::unordered_set<char> m_stopCharacters;
 	ReadVectorMethod m_readMethod = ReadVectorMethod::PUSH_BACK;
-	size_t m_readLimit = ReadLimit::UNLIMITED;
+	size_t m_readLimit = SIZE_MAX;
 };
 
 class BaseSettingsBuilder
@@ -94,7 +94,7 @@ public:
 		return *this;
 	}
 
-	BaseSettings const& Build() const
+	BaseSettings const & Build() const
 	{
 		return m_baseSettings;
 	}

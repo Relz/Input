@@ -1,6 +1,8 @@
 #ifndef LANGUAGETRANSLATOR_CONSTANT_H
 #define LANGUAGETRANSLATOR_CONSTANT_H
 
-static const char NOT_A_CHARACTER = static_cast<char const>(0xFF);
+#include <climits>
+
+static const char NOT_A_CHARACTER = CHAR_MAX;
 
 #endif //LANGUAGETRANSLATOR_CONSTANT_H

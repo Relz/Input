@@ -10,7 +10,7 @@ TEST(skip_until_strings, skips_until_strings_and_returns_true_if_any_symbol_was_
 		stringstream is("                ##$a");
 		Input input(is);
 		std::string skippedString;
-		EXPECT_TRUE(input.SkipUntilStrings({"#$"}, skippedString));
+		EXPECT_TRUE(input.SkipUntilStrings({ "#$" }, skippedString));
 		EXPECT_EQ(input.GetPosition().GetLine(), 1);
 		EXPECT_EQ(input.GetPosition().GetColumn(), 18);
 		EXPECT_EQ(skippedString, "                #");
@@ -21,7 +21,7 @@ TEST(skip_until_strings, skips_until_strings_and_returns_true_if_any_symbol_was_
 		stringstream is("#");
 		Input input(is);
 		std::string skippedString;
-		EXPECT_FALSE(input.SkipUntilStrings({" "}, skippedString));
+		EXPECT_FALSE(input.SkipUntilStrings({ " " }, skippedString));
 		EXPECT_TRUE(is.eof());
 		EXPECT_EQ(input.GetPosition().GetLine(), 1);
 		EXPECT_EQ(input.GetPosition().GetColumn(), 2);
@@ -31,7 +31,7 @@ TEST(skip_until_strings, skips_until_strings_and_returns_true_if_any_symbol_was_
 		stringstream is("%\n\na\nb\nc\nd\ne\nf\ng\nh\ni\nj\n#");
 		Input input(is);
 		std::string skippedString;
-		EXPECT_TRUE(input.SkipUntilStrings({"#"}, skippedString));
+		EXPECT_TRUE(input.SkipUntilStrings({ "#" }, skippedString));
 		EXPECT_EQ(input.GetPosition().GetLine(), 13);
 		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
 		input.SkipArguments<char>(2);
@@ -45,7 +45,7 @@ TEST(skip_until_strings, skips_multiple_strings)
 		stringstream is("  abcaa\n      \n\n\n\n\n   \n\n\n\n   #");
 		Input input(is);
 		std::string skippedString;
-		EXPECT_TRUE(input.SkipUntilStrings({"aa", "\n"}, skippedString));
+		EXPECT_TRUE(input.SkipUntilStrings({ "aa", "\n" }, skippedString));
 		EXPECT_EQ(input.GetPosition().GetLine(), 1);
 		EXPECT_EQ(input.GetPosition().GetColumn(), 6);
 		EXPECT_EQ(skippedString, "  abc");
@@ -56,7 +56,7 @@ TEST(skip_until_strings, skips_multiple_strings)
 		stringstream is("#");
 		Input input(is);
 		std::string skippedString;
-		EXPECT_FALSE(input.SkipUntilStrings({" ", "\n"}, skippedString));
+		EXPECT_FALSE(input.SkipUntilStrings({ " ", "\n" }, skippedString));
 		EXPECT_TRUE(is.eof());
 		EXPECT_EQ(input.GetPosition().GetLine(), 1);
 		EXPECT_EQ(input.GetPosition().GetColumn(), 2);

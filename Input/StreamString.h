@@ -1,8 +1,8 @@
 #ifndef PROJECT_STREAMSTRING_H
 #define PROJECT_STREAMSTRING_H
 
-#include <string>
 #include "../StreamPosition/StreamPosition.h"
+#include <string>
 
 class StreamString
 {
