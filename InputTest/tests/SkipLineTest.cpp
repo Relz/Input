@@ -150,3 +150,13 @@ TEST(skip_line, skips_line_crlf)
 		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
 	}
 }
+
+TEST(skip_line, returns_skipped_line)
+{
+	std::string isString = "0 0.1 stringArgument";
+	stringstream is(isString);
+	Input input(is);
+	std::string skippedLine;
+	EXPECT_FALSE(input.SkipLine(skippedLine));
+	EXPECT_EQ(skippedLine, isString);
+}

@@ -1,4 +1,4 @@
-#include "BaseSettings.h"
+﻿#include "BaseSettings.h"
 #include "MatrixSettings.h"
 #include "ReadVectorMethod.h"
 #include "StreamString.h"
@@ -48,6 +48,17 @@ public:
 	{
 		while (ReadChar(false))
 		{
+		}
+		return ReadEndOfLine() && !IsEndOfStream();
+	}
+
+	bool SkipLine(std::string & skippedLine)
+	{
+		skippedLine.clear();
+		char ch;
+		while (ReadChar(ch, false))
+		{
+			skippedLine.push_back(ch);
 		}
 		return ReadEndOfLine() && !IsEndOfStream();
 	}
