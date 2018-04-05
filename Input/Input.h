@@ -1,4 +1,4 @@
-﻿#include "BaseSettings.h"
+#include "BaseSettings.h"
 #include "MatrixSettings.h"
 #include "ReadVectorMethod.h"
 #include "StreamString.h"
@@ -222,7 +222,15 @@ public:
 		return m_position;
 	}
 
+	bool IsEndOfLine()
+	{
+		return m_is.peek() == ENDL_SYMBOL_CODE_CR || m_is.peek() == ENDL_SYMBOL_CODE_LF;
+	}
+
 private:
+	static int const ENDL_SYMBOL_CODE_LF = 10;
+	static int const ENDL_SYMBOL_CODE_CR = 13;
+
 	template<typename T>
 	bool ReadArgumentFromStream(T & arg)
 	{
@@ -382,14 +390,6 @@ private:
 		return result
 			&& (possibleVectSize == settings.GetBaseSettings().GetReadLimit()
 				|| settings.GetBaseSettings().GetReadLimit() == SIZE_MAX);
-	}
-
-	static int const ENDL_SYMBOL_CODE_LF = 10;
-	static int const ENDL_SYMBOL_CODE_CR = 13;
-
-	bool IsEndOfLine()
-	{
-		return m_is.peek() == ENDL_SYMBOL_CODE_CR || m_is.peek() == ENDL_SYMBOL_CODE_LF;
 	}
 
 	bool FindDelimiter(std::unordered_set<char> const & delimiters)
