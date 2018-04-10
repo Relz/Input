@@ -9,7 +9,9 @@ SET(SOURCE_FILES
 		IncreaseColumnTest.cpp
 		DecreaseColumnTest.cpp
 		TestHelper.h
-		ResetColumnTest.cpp EqualToOperatorTest.cpp NotEqualToOperatorTest.cpp)
+		ResetColumnTest.cpp
+		EqualToOperatorTest.cpp
+		NotEqualToOperatorTest.cpp)
 
 ADD_EXECUTABLE(StreamPositionTest ${SOURCE_FILES})
 

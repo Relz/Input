@@ -6,8 +6,7 @@ SET(SOURCE_FILES
 		BaseSettings.h
 		MatrixSettings.h
 		VectorSettings.h
-		Constant.h
-		StreamString.h)
+		Constant.h)
 
 ADD_LIBRARY(Input SHARED ${SOURCE_FILES})
 SET_TARGET_PROPERTIES(Input PROPERTIES LINKER_LANGUAGE CXX)

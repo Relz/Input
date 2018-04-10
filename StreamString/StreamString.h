@@ -7,8 +7,7 @@
 class StreamString
 {
 public:
-	StreamString() = default;
-	StreamString(std::string str, StreamPosition position)
+	explicit StreamString(std::string str = "", StreamPosition position = StreamPosition())
 		: string(std::move(str))
 		, position(position)
 	{}

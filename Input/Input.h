@@ -1,7 +1,7 @@
 ﻿#include "BaseSettings.h"
+#include "../StreamString/StreamString.h"
 #include "MatrixSettings.h"
 #include "ReadVectorMethod.h"
-#include "StreamString.h"
 #include "VectorSettings.h"
 #include <fstream>
 #include <functional>
@@ -169,8 +169,7 @@ public:
 			insertIterator,
 			std::make_move_iterator(possibleMatrix.begin()),
 			std::make_move_iterator(possibleMatrix.end()));
-		return !isPossibleMatrixEmpty
-			&& (enoughRows || matrixSettings.GetBaseSettings().GetReadLimit() == SIZE_MAX);
+		return !isPossibleMatrixEmpty && (enoughRows || matrixSettings.GetBaseSettings().GetReadLimit() == SIZE_MAX);
 	}
 
 	bool Scan(
