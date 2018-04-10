@@ -1,6 +1,9 @@
 class StreamPosition
 {
 public:
+	static const long MIN_LINE = 1;
+	static const long MIN_COLUMN = 1;
+
 	explicit StreamPosition(long line = MIN_LINE, long column = MIN_COLUMN)
 	{
 		SafeSetLine(line);
@@ -63,9 +66,6 @@ public:
 	}
 
 private:
-	static const long MIN_LINE = 1;
-	static const long MIN_COLUMN = 1;
-
 	long m_line;
 	long m_column;
 

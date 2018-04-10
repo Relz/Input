@@ -6,8 +6,14 @@ using namespace std;
 
 TEST(reset_column, resets_column_to_minimum)
 {
-	TestStreamPosition(
-		StreamPosition(1, 1), [](StreamPosition & streamPosition) { streamPosition.ResetColumn(); }, 1, MIN_COLUMN);
-	TestStreamPosition(
-		StreamPosition(1, 2), [](StreamPosition & streamPosition) { streamPosition.ResetColumn(); }, 1, MIN_COLUMN);
+	TestHelper::TestStreamPosition(
+		StreamPosition(1, 1),
+		[](StreamPosition & streamPosition) { streamPosition.ResetColumn(); },
+		1,
+		StreamPosition::MIN_COLUMN);
+	TestHelper::TestStreamPosition(
+		StreamPosition(1, 2),
+		[](StreamPosition & streamPosition) { streamPosition.ResetColumn(); },
+		1,
+		StreamPosition::MIN_COLUMN);
 }
