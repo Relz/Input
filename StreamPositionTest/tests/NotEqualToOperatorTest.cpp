@@ -1,4 +1,4 @@
-#include "../../StreamPosition/StreamPosition.h"
+#include "../../InputLibrary/StreamString/StreamPosition/StreamPosition.h"
 #include "gtest/gtest.h"
 
 using namespace std;

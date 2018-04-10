@@ -1,4 +1,4 @@
-#include "../../StreamString/StreamString.h"
+#include "../../InputLibrary/StreamString/StreamString.h"
 #include "TestHelper.h"
 #include "gtest/gtest.h"
 
