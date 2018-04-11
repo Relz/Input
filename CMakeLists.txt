@@ -8,5 +8,3 @@ ADD_SUBDIRECTORY(googletest/googletest)
 ADD_SUBDIRECTORY(InputLibrary)
 
 ADD_SUBDIRECTORY(InputTest)
-ADD_SUBDIRECTORY(StreamPositionTest)
-ADD_SUBDIRECTORY(StreamStringTest)
