@@ -1,4 +1,5 @@
 #include "Input.h"
+#include "TestHelper.h"
 #include "gtest/gtest.h"
 #include <sstream>
 #include <string>
@@ -7,73 +8,114 @@ using namespace std;
 
 TEST(read_arguments, returns_false_if_input_does_not_have_enough_arguments)
 {
-	stringstream is("0");
-	Input input(is);
-	int arg0;
-	int arg1;
-	string str;
-	EXPECT_FALSE(input.ReadArguments(arg0, arg1, str));
+	wstringstream stringStream(L"0");
+	Input input(stringStream);
+
+	int arg0 = 1;
+	int arg1 = 2;
+	EXPECT_FALSE(input.ReadArguments(true, arg0, arg1));
 	EXPECT_EQ(arg0, 0);
-	EXPECT_EQ(input.GetPosition().GetLine(), 1);
-	EXPECT_EQ(input.GetPosition().GetColumn(), 2);
+	EXPECT_EQ(arg1, 2);
+	EXPECT_TRUE(TestHelper::CheckState(input, 1, 2, false, 0, false, true));
 }
 
 TEST(read_arguments, returns_true_if_input_have_enough_arguments)
 {
 	{
-		std::string isStr = "0 0.1 stringArgument";
-		stringstream is(isStr);
-		Input input(is);
+		wstringstream stringStream(L"0 0.1 stringArgument");
+		Input input(stringStream);
+
 		bool arg0;
 		double arg1;
-		EXPECT_TRUE(input.ReadArguments(arg0, arg1));
-		EXPECT_EQ(input.GetPosition().GetLine(), 1);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 6);
+		EXPECT_TRUE(input.ReadArguments(true, arg0, arg1));
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 6, true, L' ', false, false));
 	}
 	{
-		std::string isStr = "0 0.1 stringArgument";
-		stringstream is(isStr);
-		Input input(is);
+		wstringstream stringStream(L"0 0.1 stringArgument");
+		Input input(stringStream);
+
 		bool arg0;
 		double arg1;
-		string arg2;
-		EXPECT_TRUE(input.ReadArguments(arg0, arg1, arg2));
+		wstring arg2;
+		EXPECT_TRUE(input.ReadArguments(true, arg0, arg1, arg2));
 		EXPECT_EQ(arg0, 0);
 		EXPECT_EQ(arg1, 0.1);
-		EXPECT_EQ(arg2, "stringArgument");
-		EXPECT_EQ(input.GetPosition().GetLine(), 1);
-		EXPECT_EQ(input.GetPosition().GetColumn(), isStr.length() + 1);
+		EXPECT_EQ(arg2, L"stringArgument");
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 21, false, 0, false, true));
 	}
 }
 
 TEST(read_arguments, reads_required_arguments_from_stream)
 {
-	std::string isStr = "0 0.1 stringArgument";
-	stringstream is(isStr);
-	Input input(is);
+	wstringstream stringStream(L"0 0.1 stringArgument");
+	Input input(stringStream);
+
 	bool arg0;
 	double arg1;
-	string arg2;
-	input.ReadArguments(arg0, arg1, arg2);
+	wstring arg2;
+	EXPECT_TRUE(input.ReadArguments(true, arg0, arg1, arg2));
 	EXPECT_FALSE(arg0);
 	EXPECT_DOUBLE_EQ(arg1, 0.1);
-	EXPECT_EQ(arg2, "stringArgument");
-	EXPECT_EQ(input.GetPosition().GetLine(), 1);
-	EXPECT_EQ(input.GetPosition().GetColumn(), isStr.length() + 1);
+	EXPECT_EQ(arg2, L"stringArgument");
+	EXPECT_TRUE(TestHelper::CheckState(input, 1, 21, false, 0, false, true));
 }
 
 TEST(read_arguments, reads_cyrillic_symbols)
 {
-	std::string isStr = "привет, это строковыеАргументы";
-	stringstream is(isStr);
-	Input input(is);
-	string arg0;
-	string arg1;
-	string arg2;
-	input.ReadArguments(arg0, arg1, arg2);
-	EXPECT_EQ(arg0, "привет,");
-	EXPECT_EQ(arg1, "это");
-	EXPECT_EQ(arg2, "строковыеАргументы");
-	EXPECT_EQ(input.GetPosition().GetLine(), 1);
-	EXPECT_EQ(input.GetPosition().GetColumn(), isStr.length() + 1);
+	{
+		wstringstream stringStream(L"привет, это строковыеАргументы");
+		Input input(stringStream);
+
+		wstring arg0;
+		wstring arg1;
+		wstring arg2;
+		EXPECT_TRUE(input.ReadArguments(true, arg0, arg1, arg2));
+		EXPECT_EQ(arg0, L"привет,");
+		EXPECT_EQ(arg1, L"это");
+		EXPECT_EQ(arg2, L"строковыеАргументы");
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 31, false, 0, false, true));
+	}
+	{
+		wstringstream stringStream(L"привет");
+		Input input(stringStream);
+
+		wchar_t firstChar;
+		wchar_t secondChar;
+		wchar_t thirdChar;
+		EXPECT_TRUE(input.ReadArguments(true, firstChar, secondChar, thirdChar));
+		EXPECT_EQ(firstChar, L'п');
+		EXPECT_EQ(secondChar, L'р');
+		EXPECT_EQ(thirdChar, L'и');
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 4, true, L'в', false, false));
+	}
+}
+
+TEST(read_arguments, skip_end_of_line_by_default)
+{
+	wstringstream stringStream(L"0\n0.1\nstringArgument");
+	Input input(stringStream);
+
+	bool arg0;
+	double arg1;
+	wstring arg2;
+	EXPECT_TRUE(input.ReadArguments(true, arg0, arg1, arg2));
+	EXPECT_EQ(arg0, 0);
+	EXPECT_EQ(arg1, 0.1);
+	EXPECT_EQ(arg2, L"stringArgument");
+	EXPECT_TRUE(TestHelper::CheckState(input, 3, 15, false, 0, false, true));
+}
+
+TEST(read_arguments, can_do_not_skip_end_of_line)
+{
+	wstringstream stringStream(L"0\n0.1\nstringArgument");
+	Input input(stringStream);
+
+	bool arg0;
+	double arg1 = 0.5;
+	wstring arg2 = L"default value";
+	EXPECT_FALSE(input.ReadArguments(false, arg0, arg1, arg2));
+	EXPECT_EQ(arg0, 0);
+	EXPECT_EQ(arg1, 0.5);
+	EXPECT_EQ(arg2, L"default value");
+	EXPECT_TRUE(TestHelper::CheckState(input, 1, 2, true, L'\n', true, false));
 }

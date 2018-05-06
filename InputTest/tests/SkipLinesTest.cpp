@@ -1,35 +1,36 @@
 #include "Input.h"
+#include "TestHelper.h"
 #include "gtest/gtest.h"
 #include <sstream>
 #include <string>
 
 using namespace std;
 
-TEST(skip_lines, returns_false_if_stream_has_not_new_line_required_count_times)
+TEST(skip_lines, returns_false_if_stream_has_not_end_of_lines_required_count_times)
 {
-	stringstream is("0 0.1 stringArgument \n#");
-	Input input(is);
+	wstringstream stringStream(L"0 0.1\nstringArgument\nanotherString\n");
+	Input input(stringStream);
+
+	EXPECT_TRUE(input.SkipLines(2));
+	EXPECT_TRUE(TestHelper::CheckState(input, 3, 1, true, L'a', false, false));
 	EXPECT_FALSE(input.SkipLines(2));
-	EXPECT_EQ(input.GetPosition().GetLine(), 2);
-	EXPECT_EQ(input.GetPosition().GetColumn(), 2);
+	EXPECT_TRUE(TestHelper::CheckState(input, 4, 1, false, 0, false, true));
 }
 
 TEST(skip_lines, skips_lines)
 {
 	{
-		stringstream is("0 0.1 stringArgument \n#");
-		Input input(is);
+		wstringstream stringStream(L"0 0.1 stringArgument \n#");
+		Input input(stringStream);
+
 		EXPECT_TRUE(input.SkipLines(1));
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('#'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 2);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'#', false, false));
 	}
 	{
-		stringstream is("\n\n\n\n\n#");
-		Input input(is);
+		wstringstream stringStream(L"\n\n\n\n\n#");
+		Input input(stringStream);
+
 		EXPECT_TRUE(input.SkipLines(5));
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('#'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 6);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
+		EXPECT_TRUE(TestHelper::CheckState(input, 6, 1, true, L'#', false, false));
 	}
 }

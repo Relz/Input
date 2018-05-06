@@ -9,14 +9,17 @@ SET(SOURCE_FILES
 	SkipCharactersTest.cpp
 	SkipUntilCharactersTest.cpp
 	ReadArgumentsTest.cpp
-	ReadVectorTemplateTest.cpp
-	ReadVectorTemplateWithRulesTest.cpp
-	ReadVectorCharTest.cpp
-	ReadVectorWithTrueCharTest.cpp
-	ReadMatrixTemplateTest.cpp
+	ReadVectorTest.cpp
+	ReadMatrixTest.cpp
 	ScanTest.cpp
 	SkipUntilStringsTest.cpp
-	GetFileNameTest.cpp)
+	GetFileNameTest.cpp
+	IsEndOfStreamTest.cpp
+	IsEndOfLineTest.cpp
+	ReadLineTest.cpp
+	ReadUntilCharactersTest.cpp
+	ReadUntilStringsTest.cpp
+	TestHelper.h)
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/InputLibrary)
 ADD_EXECUTABLE(InputTest ${SOURCE_FILES})

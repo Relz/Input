@@ -1,162 +1,105 @@
 #include "Input.h"
+#include "TestHelper.h"
 #include "gtest/gtest.h"
 #include <sstream>
 #include <string>
 
 using namespace std;
 
-TEST(skip_line, returns_false_if_stream_has_not_new_line)
+TEST(skip_line, returns_false_if_end_of_line_was_not_reached)
 {
-	std::string isString = "0 0.1 stringArgument";
-	stringstream is(isString);
-	Input input(is);
-	EXPECT_FALSE(input.SkipLine());
-	EXPECT_EQ(input.GetPosition().GetLine(), 1);
-	EXPECT_EQ(input.GetPosition().GetColumn(), isString.length() + 1);
-}
+	{
+		wstringstream stringStream(L"string");
+		Input input(stringStream);
 
-TEST(skip_line, returns_false_if_new_line_in_end_of_stream_lf)
-{
-	stringstream is("...\n");
-	Input input(is);
-	EXPECT_FALSE(input.SkipLine());
-	EXPECT_EQ(input.GetPosition().GetLine(), 2);
-	EXPECT_EQ(input.GetPosition().GetColumn(), 1);
-}
+		EXPECT_TRUE(input.SkipArgument<wstring>());
+		EXPECT_FALSE(input.SkipLine());
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 7, false, 0, false, true));
+	}
+	{
+		wstringstream stringStream(L"string\n");
+		Input input(stringStream);
 
-TEST(skip_line, returns_false_if_new_line_in_end_of_stream_cr)
-{
-	stringstream is("...\r");
-	Input input(is);
-	EXPECT_FALSE(input.SkipLine());
-	EXPECT_EQ(input.GetPosition().GetLine(), 2);
-	EXPECT_EQ(input.GetPosition().GetColumn(), 1);
-}
-
-TEST(skip_line, returns_false_if_new_line_in_end_of_stream_crlf)
-{
-	stringstream is("...\r\n");
-	Input input(is);
-	EXPECT_TRUE(input.SkipLine());
-	EXPECT_EQ(is.peek(), '\n');
-	EXPECT_EQ(input.GetPosition().GetLine(), 2);
-	EXPECT_EQ(input.GetPosition().GetColumn(), 1);
-	EXPECT_FALSE(input.SkipLine());
-	EXPECT_EQ(is.peek(), std::ifstream::traits_type::eof());
-	EXPECT_EQ(input.GetPosition().GetLine(), 3);
-	EXPECT_EQ(input.GetPosition().GetColumn(), 1);
+		EXPECT_TRUE(input.SkipLine());
+		EXPECT_FALSE(input.SkipLine());
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, false, 0, false, true));
+	}
 }
 
 TEST(skip_line, skips_line_lf)
 {
 	{
-		stringstream is("0 0.1 stringArgument \n#");
-		Input input(is);
+		wstringstream stringStream(L"0 0.1 stringArgument \n#");
+		Input input(stringStream);
+
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('#'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 2);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'#', false, false));
 	}
 	{
-		stringstream is("\n#");
-		Input input(is);
+		wstringstream stringStream(L"\n#");
+		Input input(stringStream);
+
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('#'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 2);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'#', false, false));
 	}
 	{
-		stringstream is("\n\n#");
-		Input input(is);
+		wstringstream stringStream(L"\n\n#");
+		Input input(stringStream);
+
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('\n'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 2);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'\n', true, false));
 	}
 }
 
 TEST(skip_line, skips_line_cr)
 {
 	{
-		stringstream is("0 0.1 stringArgument \r#");
-		Input input(is);
+		wstringstream stringStream(L"0 0.1 stringArgument \r#");
+		Input input(stringStream);
+
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('#'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 2);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'#', false, false));
 	}
 	{
-		stringstream is("\r#");
-		Input input(is);
+		wstringstream stringStream(L"\r#");
+		Input input(stringStream);
+
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('#'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 2);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'#', false, false));
 	}
 	{
-		stringstream is("\r\r#");
-		Input input(is);
+		wstringstream stringStream(L"\r\r#");
+		Input input(stringStream);
+
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('\r'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 2);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'\r', true, false));
 	}
 }
 
 TEST(skip_line, skips_line_crlf)
 {
 	{
-		stringstream is("0 0.1 stringArgument \r\n#");
-		Input input(is);
-		EXPECT_TRUE(input.SkipLine());
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('\n'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 2);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
-		EXPECT_TRUE(input.SkipLine());
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('#'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 3);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
-	}
-	{
-		stringstream is("\r\n#");
-		Input input(is);
-		EXPECT_TRUE(input.SkipLine());
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('\n'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 2);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
-		EXPECT_TRUE(input.SkipLine());
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('#'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 3);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
-	}
-	{
-		stringstream is("\r\n\r\n#");
-		Input input(is);
-		EXPECT_TRUE(input.SkipLine());
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('\n'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 2);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
-		EXPECT_TRUE(input.SkipLine());
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('\r'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 3);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
-		EXPECT_TRUE(input.SkipLine());
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('\n'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 4);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
-		EXPECT_TRUE(input.SkipLine());
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('#'));
-		EXPECT_EQ(input.GetPosition().GetLine(), 5);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
-	}
-}
+		wstringstream stringStream(L"0 0.1 stringArgument \r\n#");
+		Input input(stringStream);
 
-TEST(skip_line, returns_skipped_line)
-{
-	std::string isString = "0 0.1 stringArgument";
-	stringstream is(isString);
-	Input input(is);
-	std::string skippedLine;
-	EXPECT_FALSE(input.SkipLine(skippedLine));
-	EXPECT_EQ(skippedLine, isString);
+		EXPECT_TRUE(input.SkipLine());
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'#', false, false));
+	}
+	{
+		wstringstream stringStream(L"\r\n#");
+		Input input(stringStream);
+
+		EXPECT_TRUE(input.SkipLine());
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'#', false, false));
+	}
+	{
+		wstringstream stringStream(L"\r\n\r\n#");
+		Input input(stringStream);
+
+		EXPECT_TRUE(input.SkipLine());
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'\r', true, false));
+
+		EXPECT_TRUE(input.SkipLine());
+		EXPECT_TRUE(TestHelper::CheckState(input, 3, 1, true, L'#', false, false));
+	}
 }

@@ -1,65 +1,58 @@
 #include "Input.h"
+#include "TestHelper.h"
 #include "gtest/gtest.h"
 #include <sstream>
 
 using namespace std;
 
-TEST(skip_until_strings, skips_until_strings_and_returns_true_if_any_symbol_was_reached)
+TEST(skip_until_strings, skips_until_strings_and_returns_true_if_any_string_was_reached)
 {
 	{
-		stringstream is("                ##$a");
-		Input input(is);
-		std::string skippedString;
-		EXPECT_TRUE(input.SkipUntilStrings({ "#$" }, skippedString));
-		EXPECT_EQ(input.GetPosition().GetLine(), 1);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 18);
-		EXPECT_EQ(skippedString, "                #");
-		input.SkipArgument<char>();
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('$'));
+		wstringstream stringStream(L"                ##$a");
+		Input input(stringStream);
+
+		EXPECT_TRUE(input.SkipUntilStrings({ L"#$" }));
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 18, true, L'#', false, false));
+
+		EXPECT_TRUE(input.SkipArgument<wchar_t>());
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 19, true, L'$', false, false));
 	}
 	{
-		stringstream is("#");
-		Input input(is);
-		std::string skippedString;
-		EXPECT_FALSE(input.SkipUntilStrings({ " " }, skippedString));
-		EXPECT_TRUE(is.eof());
-		EXPECT_EQ(input.GetPosition().GetLine(), 1);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 2);
-		EXPECT_EQ(skippedString, "#");
+		wstringstream stringStream(L"#");
+		Input input(stringStream);
+
+		EXPECT_FALSE(input.SkipUntilStrings({ L" " }));
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 2, false, 0, false, true));
 	}
 	{
-		stringstream is("%\n\na\nb\nc\nd\ne\nf\ng\nh\ni\nj\n#");
-		Input input(is);
-		std::string skippedString;
-		EXPECT_TRUE(input.SkipUntilStrings({ "#" }, skippedString));
-		EXPECT_EQ(input.GetPosition().GetLine(), 13);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 1);
-		input.SkipArguments<char>(2);
-		EXPECT_TRUE(is.eof());
+		wstringstream stringStream(L"%\n\na\nb\nc\nd\ne\nf\ng\nh\ni\nj\n#");
+		Input input(stringStream);
+
+		EXPECT_TRUE(input.SkipUntilStrings({ L"#" }));
+		EXPECT_TRUE(TestHelper::CheckState(input, 13, 1, true, L'#', false, false));
+
+		EXPECT_TRUE(input.SkipArgument<wchar_t>());
+		EXPECT_TRUE(TestHelper::CheckState(input, 13, 2, false, 0, false, true));
 	}
 }
 
 TEST(skip_until_strings, skips_multiple_strings)
 {
 	{
-		stringstream is("  abcaa\n      \n\n\n\n\n   \n\n\n\n   #");
-		Input input(is);
-		std::string skippedString;
-		EXPECT_TRUE(input.SkipUntilStrings({ "aa", "\n" }, skippedString));
-		EXPECT_EQ(input.GetPosition().GetLine(), 1);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 6);
-		EXPECT_EQ(skippedString, "  abc");
-		input.SkipArguments<char>(2);
-		EXPECT_EQ(is.peek(), char_traits<char>::to_int_type('\n'));
+		wstringstream stringStream(L"  abcaa\n      \n\n\n\n\n   \n\n\n\n   #");
+		Input input(stringStream);
+
+		EXPECT_TRUE(input.SkipUntilStrings({ L"aa", L"\n" }));
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 6, true, L'a', false, false));
+
+		EXPECT_TRUE(input.SkipArguments<wchar_t>(2));
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 8, true, L'\n', true, false));
 	}
 	{
-		stringstream is("#");
-		Input input(is);
-		std::string skippedString;
-		EXPECT_FALSE(input.SkipUntilStrings({ " ", "\n" }, skippedString));
-		EXPECT_TRUE(is.eof());
-		EXPECT_EQ(input.GetPosition().GetLine(), 1);
-		EXPECT_EQ(input.GetPosition().GetColumn(), 2);
-		EXPECT_EQ(skippedString, "#");
+		wstringstream stringStream(L"#");
+		Input input(stringStream);
+
+		EXPECT_FALSE(input.SkipUntilStrings({ L" ", L"\n" }));
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 2, false, 0, false, true));
 	}
 }

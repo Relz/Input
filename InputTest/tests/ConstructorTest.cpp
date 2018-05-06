@@ -1,4 +1,5 @@
 #include "Input.h"
+#include "TestHelper.h"
 #include "gtest/gtest.h"
 #include <sstream>
 
@@ -11,17 +12,16 @@ TEST(constructor, throws_invalid_argument_if_file_does_not_exists)
 
 TEST(constructor, throws_invalid_argument_if_stream_is_empty)
 {
-	ofstream wof("empty", ofstream::trunc);
-	wof.close();
+	ofstream output("empty", ofstream::trunc);
+	output.close();
 	EXPECT_THROW(Input("empty"), invalid_argument);
-	stringstream is("");
-	EXPECT_THROW(Input input(is), invalid_argument);
+	wstringstream stringStream(L"");
+	EXPECT_THROW(Input input(stringStream), invalid_argument);
 }
 
 TEST(constructor, initials_position_to_first_line_and_first_column)
 {
-	stringstream is("not empty");
-	Input input(is);
-	EXPECT_EQ(input.GetPosition().GetLine(), 1);
-	EXPECT_EQ(input.GetPosition().GetColumn(), 1);
+	wstringstream stringStream(L"not empty");
+	Input input(stringStream);
+	EXPECT_TRUE(TestHelper::CheckState(input, 1, 1, true, L'n', false, false));
 }

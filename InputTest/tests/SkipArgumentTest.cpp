@@ -1,4 +1,5 @@
 #include "Input.h"
+#include "TestHelper.h"
 #include "gtest/gtest.h"
 #include <sstream>
 #include <string>
@@ -7,52 +8,109 @@ using namespace std;
 
 TEST(skip_argument, returns_false_if_stream_has_not_argument)
 {
-	stringstream is("0");
-	Input input(is);
-	char firstArgument;
-	input.ReadArguments(firstArgument);
-	EXPECT_FALSE(input.SkipArgument<char>());
+	wstringstream stringStream(L"0");
+	Input input(stringStream);
+
+	EXPECT_TRUE(input.SkipArgument<wchar_t>());
+	EXPECT_TRUE(TestHelper::CheckState(input, 1, 2, false, 0, false, true));
+
+	EXPECT_FALSE(input.SkipArgument<wchar_t>());
+	EXPECT_TRUE(TestHelper::CheckState(input, 1, 2, false, 0, false, true));
 }
 
 TEST(skip_argument, skips_argument)
 {
 	{
-		stringstream is("0 0.1 stringArgument");
-		Input input(is);
-		EXPECT_TRUE(input.SkipArgument<string>());
+		wstringstream stringStream(L"0 0.1 stringArgument");
+		Input input(stringStream);
+
+		EXPECT_TRUE(input.SkipArgument<wstring>());
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 2, true, L' ', false, false));
 
 		double number;
-		EXPECT_TRUE(input.ReadArguments(number));
+		EXPECT_TRUE(input.ReadArguments(true, number));
 		EXPECT_EQ(number, 0.1);
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 6, true, L' ', false, false));
 	}
 	{
-		stringstream is("0 0.1 stringArgument");
-		Input input(is);
-		EXPECT_TRUE(input.SkipArgument<char>());
+		wstringstream stringStream(L"0 0.1 stringArgument");
+		Input input(stringStream);
 
-		char space;
-		EXPECT_TRUE(input.ReadArguments(space));
-		EXPECT_EQ(space, ' ');
+		EXPECT_TRUE(input.SkipArgument<wchar_t>());
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 2, true, L' ', false, false));
 	}
 	{
-		stringstream is("0 0.1 stringArgument");
-		Input input(is);
-		EXPECT_TRUE(input.SkipArgument<string>());
-		EXPECT_TRUE(input.SkipArgument<string>());
+		wstringstream stringStream(L"0 0.1 stringArgument");
+		Input input(stringStream);
 
-		string lastArgument;
-		EXPECT_TRUE(input.ReadArguments(lastArgument));
-		EXPECT_EQ(lastArgument, "stringArgument");
+		EXPECT_TRUE(input.SkipArgument<wstring>());
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 2, true, L' ', false, false));
+
+		EXPECT_TRUE(input.SkipArgument<wstring>());
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 6, true, L' ', false, false));
+
+		wstring lastArgument;
+		EXPECT_TRUE(input.ReadArguments(true, lastArgument));
+		EXPECT_EQ(lastArgument, L"stringArgument");
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 21, false, 0, false, true));
 	}
 }
 
-TEST(skip_argument, skips_end_of_line)
+TEST(skip_argument, skips_end_of_line_by_default)
 {
-	stringstream is("\n0 0.1 stringArgument");
-	Input input(is);
-	EXPECT_TRUE(input.SkipArgument<char>());
+	{
+		wstringstream stringStream(L"\n3 0.1 stringArgument");
+		Input input(stringStream);
 
-	double number;
-	EXPECT_TRUE(input.ReadArguments(number));
-	EXPECT_EQ(number, 0);
+		EXPECT_TRUE(input.SkipArgument<wchar_t>());
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'3', false, false));
+	}
+	{
+		wstringstream stringStream(L"   \n3 0.1 stringArgument");
+		Input input(stringStream);
+
+		EXPECT_TRUE(input.SkipArgument<wstring>());
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 2, true, L' ', false, false));
+	}
+	{
+		wstringstream stringStream(L"\n3\n0.1 stringArgument");
+		Input input(stringStream);
+
+		EXPECT_TRUE(input.SkipArgument<wstring>());
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 2, true, L'\n', true, false));
+
+		EXPECT_TRUE(input.SkipArgument<wstring>());
+		EXPECT_TRUE(TestHelper::CheckState(input, 3, 4, true, L' ', false, false));
+	}
+}
+
+TEST(skip_argument, can_do_not_skip_end_of_line)
+{
+	{
+		wstringstream stringStream(L"\n3 0.1 stringArgument");
+		Input input(stringStream);
+
+		EXPECT_FALSE(input.SkipArgument<wchar_t>(false));
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 1, true, L'\n', true, false));
+	}
+	{
+		wstringstream stringStream(L"1\n3 0.1 stringArgument");
+		Input input(stringStream);
+
+		EXPECT_TRUE(input.SkipArgument<wchar_t>(false));
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 2, true, L'\n', true, false));
+
+		EXPECT_FALSE(input.SkipArgument<wchar_t>(false));
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 2, true, L'\n', true, false));
+	}
+	{
+		wstringstream stringStream(L"1\n3 0.1 stringArgument");
+		Input input(stringStream);
+
+		EXPECT_TRUE(input.SkipArgument<wstring>(false));
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 2, true, L'\n', true, false));
+
+		EXPECT_FALSE(input.SkipArgument<wstring>(false));
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 2, true, L'\n', true, false));
+	}
 }
