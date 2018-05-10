@@ -6,7 +6,7 @@ using namespace std;
 
 TEST(get_file_name, returns_empty_string_if_no_input_file_name_was_specified)
 {
-	wstringstream stringStream(L"not empty");
+	stringstream stringStream("not empty");
 	EXPECT_EQ(Input(stringStream).GetFileName(), "");
 }
 

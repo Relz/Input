@@ -11,13 +11,13 @@ public:
 		long expectedLine,
 		long expectedColumn,
 		bool isNextCharacterExpected,
-		wchar_t expectedNextCharacter,
+		char expectedNextCharacter,
 		bool expectedIsEndOfLine,
 		bool expectedIsEndOfStream)
 	{
 		StreamPosition position = input.GetPosition();
 
-		wchar_t nextCharacter;
+		char nextCharacter;
 
 		EXPECT_EQ(position.GetLine(), expectedLine);
 		EXPECT_EQ(position.GetColumn(), expectedColumn);

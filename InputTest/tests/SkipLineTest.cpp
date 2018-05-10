@@ -9,15 +9,15 @@ using namespace std;
 TEST(skip_line, returns_false_if_end_of_line_was_not_reached)
 {
 	{
-		wstringstream stringStream(L"string");
+		stringstream stringStream("string");
 		Input input(stringStream);
 
-		EXPECT_TRUE(input.SkipArgument<wstring>());
+		EXPECT_TRUE(input.SkipArgument<string>());
 		EXPECT_FALSE(input.SkipLine());
 		EXPECT_TRUE(TestHelper::CheckState(input, 1, 7, false, 0, false, true));
 	}
 	{
-		wstringstream stringStream(L"string\n");
+		stringstream stringStream("string\n");
 		Input input(stringStream);
 
 		EXPECT_TRUE(input.SkipLine());
@@ -29,77 +29,77 @@ TEST(skip_line, returns_false_if_end_of_line_was_not_reached)
 TEST(skip_line, skips_line_lf)
 {
 	{
-		wstringstream stringStream(L"0 0.1 stringArgument \n#");
+		stringstream stringStream("0 0.1 stringArgument \n#");
 		Input input(stringStream);
 
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'#', false, false));
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, '#', false, false));
 	}
 	{
-		wstringstream stringStream(L"\n#");
+		stringstream stringStream("\n#");
 		Input input(stringStream);
 
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'#', false, false));
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, '#', false, false));
 	}
 	{
-		wstringstream stringStream(L"\n\n#");
+		stringstream stringStream("\n\n#");
 		Input input(stringStream);
 
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'\n', true, false));
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, '\n', true, false));
 	}
 }
 
 TEST(skip_line, skips_line_cr)
 {
 	{
-		wstringstream stringStream(L"0 0.1 stringArgument \r#");
+		stringstream stringStream("0 0.1 stringArgument \r#");
 		Input input(stringStream);
 
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'#', false, false));
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, '#', false, false));
 	}
 	{
-		wstringstream stringStream(L"\r#");
+		stringstream stringStream("\r#");
 		Input input(stringStream);
 
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'#', false, false));
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, '#', false, false));
 	}
 	{
-		wstringstream stringStream(L"\r\r#");
+		stringstream stringStream("\r\r#");
 		Input input(stringStream);
 
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'\r', true, false));
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, '\r', true, false));
 	}
 }
 
 TEST(skip_line, skips_line_crlf)
 {
 	{
-		wstringstream stringStream(L"0 0.1 stringArgument \r\n#");
+		stringstream stringStream("0 0.1 stringArgument \r\n#");
 		Input input(stringStream);
 
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'#', false, false));
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, '#', false, false));
 	}
 	{
-		wstringstream stringStream(L"\r\n#");
+		stringstream stringStream("\r\n#");
 		Input input(stringStream);
 
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'#', false, false));
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, '#', false, false));
 	}
 	{
-		wstringstream stringStream(L"\r\n\r\n#");
+		stringstream stringStream("\r\n\r\n#");
 		Input input(stringStream);
 
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, L'\r', true, false));
+		EXPECT_TRUE(TestHelper::CheckState(input, 2, 1, true, '\r', true, false));
 
 		EXPECT_TRUE(input.SkipLine());
-		EXPECT_TRUE(TestHelper::CheckState(input, 3, 1, true, L'#', false, false));
+		EXPECT_TRUE(TestHelper::CheckState(input, 3, 1, true, '#', false, false));
 	}
 }

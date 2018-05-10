@@ -15,13 +15,13 @@ TEST(constructor, throws_invalid_argument_if_stream_is_empty)
 	ofstream output("empty", ofstream::trunc);
 	output.close();
 	EXPECT_THROW(Input("empty"), invalid_argument);
-	wstringstream stringStream(L"");
+	stringstream stringStream("");
 	EXPECT_THROW(Input input(stringStream), invalid_argument);
 }
 
 TEST(constructor, initials_position_to_first_line_and_first_column)
 {
-	wstringstream stringStream(L"not empty");
+	stringstream stringStream("not empty");
 	Input input(stringStream);
-	EXPECT_TRUE(TestHelper::CheckState(input, 1, 1, true, L'n', false, false));
+	EXPECT_TRUE(TestHelper::CheckState(input, 1, 1, true, 'n', false, false));
 }

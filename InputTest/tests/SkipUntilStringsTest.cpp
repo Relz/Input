@@ -8,30 +8,30 @@ using namespace std;
 TEST(skip_until_strings, skips_until_strings_and_returns_true_if_any_string_was_reached)
 {
 	{
-		wstringstream stringStream(L"                ##$a");
+		stringstream stringStream("                ##$a");
 		Input input(stringStream);
 
-		EXPECT_TRUE(input.SkipUntilStrings({ L"#$" }));
-		EXPECT_TRUE(TestHelper::CheckState(input, 1, 18, true, L'#', false, false));
+		EXPECT_TRUE(input.SkipUntilStrings({ "#$" }));
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 18, true, '#', false, false));
 
-		EXPECT_TRUE(input.SkipArgument<wchar_t>());
-		EXPECT_TRUE(TestHelper::CheckState(input, 1, 19, true, L'$', false, false));
+		EXPECT_TRUE(input.SkipArgument<char>());
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 19, true, '$', false, false));
 	}
 	{
-		wstringstream stringStream(L"#");
+		stringstream stringStream("#");
 		Input input(stringStream);
 
-		EXPECT_FALSE(input.SkipUntilStrings({ L" " }));
+		EXPECT_FALSE(input.SkipUntilStrings({ " " }));
 		EXPECT_TRUE(TestHelper::CheckState(input, 1, 2, false, 0, false, true));
 	}
 	{
-		wstringstream stringStream(L"%\n\na\nb\nc\nd\ne\nf\ng\nh\ni\nj\n#");
+		stringstream stringStream("%\n\na\nb\nc\nd\ne\nf\ng\nh\ni\nj\n#");
 		Input input(stringStream);
 
-		EXPECT_TRUE(input.SkipUntilStrings({ L"#" }));
-		EXPECT_TRUE(TestHelper::CheckState(input, 13, 1, true, L'#', false, false));
+		EXPECT_TRUE(input.SkipUntilStrings({ "#" }));
+		EXPECT_TRUE(TestHelper::CheckState(input, 13, 1, true, '#', false, false));
 
-		EXPECT_TRUE(input.SkipArgument<wchar_t>());
+		EXPECT_TRUE(input.SkipArgument<char>());
 		EXPECT_TRUE(TestHelper::CheckState(input, 13, 2, false, 0, false, true));
 	}
 }
@@ -39,20 +39,20 @@ TEST(skip_until_strings, skips_until_strings_and_returns_true_if_any_string_was_
 TEST(skip_until_strings, skips_multiple_strings)
 {
 	{
-		wstringstream stringStream(L"  abcaa\n      \n\n\n\n\n   \n\n\n\n   #");
+		stringstream stringStream("  abcaa\n      \n\n\n\n\n   \n\n\n\n   #");
 		Input input(stringStream);
 
-		EXPECT_TRUE(input.SkipUntilStrings({ L"aa", L"\n" }));
-		EXPECT_TRUE(TestHelper::CheckState(input, 1, 6, true, L'a', false, false));
+		EXPECT_TRUE(input.SkipUntilStrings({ "aa", "\n" }));
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 6, true, 'a', false, false));
 
-		EXPECT_TRUE(input.SkipArguments<wchar_t>(2));
-		EXPECT_TRUE(TestHelper::CheckState(input, 1, 8, true, L'\n', true, false));
+		EXPECT_TRUE(input.SkipArguments<char>(2));
+		EXPECT_TRUE(TestHelper::CheckState(input, 1, 8, true, '\n', true, false));
 	}
 	{
-		wstringstream stringStream(L"#");
+		stringstream stringStream("#");
 		Input input(stringStream);
 
-		EXPECT_FALSE(input.SkipUntilStrings({ L" ", L"\n" }));
+		EXPECT_FALSE(input.SkipUntilStrings({ " ", "\n" }));
 		EXPECT_TRUE(TestHelper::CheckState(input, 1, 2, false, 0, false, true));
 	}
 }
