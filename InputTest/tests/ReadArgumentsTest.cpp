@@ -60,7 +60,7 @@ TEST(read_arguments, reads_required_arguments_from_stream)
 	EXPECT_TRUE(TestHelper::CheckState(input, 1, 21, false, 0, false, true));
 }
 
-TEST(read_arguments, skip_end_of_line_by_default)
+TEST(read_arguments, skips_end_of_line_by_default)
 {
 	stringstream stringStream("0\n0.1\nstringArgument");
 	Input input(stringStream);

@@ -1,24 +1,26 @@
 INCLUDE_DIRECTORIES(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 SET(SOURCE_FILES
+	EmplaceBackElementTest.cpp
+	EmplaceBackVectorIfNotEmptyTest.cpp
 	ConstructorTest.cpp
-	SkipArgumentTest.cpp
-	SkipArgumentsTest.cpp
-	SkipLineTest.cpp
-	SkipLinesTest.cpp
-	SkipCharactersTest.cpp
-	SkipUntilCharactersTest.cpp
-	ReadArgumentsTest.cpp
-	ReadVectorTest.cpp
-	ReadMatrixTest.cpp
-	ScanTest.cpp
-	SkipUntilStringsTest.cpp
 	GetFileNameTest.cpp
 	IsEndOfStreamTest.cpp
 	IsEndOfLineTest.cpp
+	SkipLineTest.cpp
+	SkipLinesTest.cpp
+	SkipArgumentTest.cpp
+	SkipArgumentsTest.cpp
+	SkipCharactersTest.cpp
+	SkipUntilCharactersTest.cpp
+	SkipUntilStringsTest.cpp
 	ReadLineTest.cpp
+	ReadArgumentsTest.cpp
 	ReadUntilCharactersTest.cpp
 	ReadUntilStringsTest.cpp
+	ReadVectorTest.cpp
+	ReadMatrixTest.cpp
+	ScanTest.cpp
 	TestHelper.h)
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/InputLibrary)
