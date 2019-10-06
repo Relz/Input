@@ -1,10 +1,12 @@
 INCLUDE_DIRECTORIES(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 SET(SOURCE_FILES
+	ConstructorTest.cpp
 	EmplaceBackElementTest.cpp
 	EmplaceBackVectorIfNotEmptyTest.cpp
-	ConstructorTest.cpp
+	GetCharPositionTest.cpp
 	GetFileNameTest.cpp
+	GetSizeTest.cpp
 	IsEndOfStreamTest.cpp
 	IsEndOfLineTest.cpp
 	SkipLineTest.cpp
